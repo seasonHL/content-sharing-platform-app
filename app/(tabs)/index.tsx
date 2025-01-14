@@ -1,47 +1,35 @@
-import { Image, StyleSheet } from "react-native";
-import ParallaxScrollView from "@/components/ParallaxScrollView";
-import { useEffect } from "react";
-import AsyncStorage from "@react-native-async-storage/async-storage";
-import { useRouter } from "expo-router";
+import { StyleSheet, FlatList } from "react-native";
+import { useEffect, useState } from "react";
+import { getPostList } from "@/service/home";
+import { PostType } from "@/types";
+import PostCard from "@/components/home/PostCard";
+import HomePageHeader from "@/components/home/Header";
+import { SafeAreaView } from "react-native-safe-area-context";
+import WaterFallList from "@/components/ui/WaterFallList";
 
 export default function HomeScreen() {
-  const router = useRouter();
+  const [postList, setPostList] = useState<PostType[]>([]);
   useEffect(() => {
-    AsyncStorage.getItem("access_token").then((res) => {
-      console.log(res);
-      if (res === null) {
-        router.navigate("/auth");
-      }
+    getPostList().then((res) => {
+      setPostList(res);
     });
   }, []);
   return (
-    <ParallaxScrollView
-      headerBackgroundColor={{ light: "#A1CEDC", dark: "#1D3D47" }}
-      headerImage={
-        <Image
-          source={require("@/assets/images/partial-react-logo.png")}
-          style={styles.reactLogo}
-        />
-      }
-    ></ParallaxScrollView>
+    <SafeAreaView>
+      <HomePageHeader />
+      <WaterFallList
+        data={postList}
+        renderItem={({ item }) => <PostCard post={item} />}
+        keyExtractor={(item) => item.post_id.toFixed()}
+        numColumns={2}
+        showsVerticalScrollIndicator={false}
+      />
+    </SafeAreaView>
   );
 }
 
 const styles = StyleSheet.create({
-  titleContainer: {
-    flexDirection: "row",
-    alignItems: "center",
-    gap: 8,
-  },
-  stepContainer: {
-    gap: 8,
-    marginBottom: 8,
-  },
-  reactLogo: {
-    height: 178,
-    width: 290,
-    bottom: 0,
-    left: 0,
-    position: "absolute",
+  list: {
+    margin: "auto",
   },
 });

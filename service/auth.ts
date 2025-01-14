@@ -15,3 +15,8 @@ export const login = async (data: ILoginData) => {
     }
     return true
 }
+
+export const verify = async () => {
+    const res = await service.get('/auth/verify')
+    return res.data
+}
