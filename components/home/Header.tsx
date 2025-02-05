@@ -1,6 +1,6 @@
 import { vw } from "@/utils";
 import { ThemedView } from "../ui/ThemedView";
-import { StyleSheet, Text, View } from "react-native";
+import { StatusBar, StyleSheet, Text, View } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import { DrawerContext } from "@/app/(tabs)/_layout";
 import { useContext } from "react";
@@ -28,6 +28,7 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     paddingVertical: vw(4),
     paddingHorizontal: vw(8),
+    paddingTop: StatusBar.currentHeight,
   },
   mlAuto: {
     marginLeft: "auto",

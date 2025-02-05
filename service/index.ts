@@ -1,8 +1,26 @@
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import axios from "axios";
+import io from "socket.io-client";
+
+const BASE_URL = 'http://192.168.4.125:3000'
+
+export const socket = io(BASE_URL, {
+    async auth(cb) {
+        cb({
+            token: await AsyncStorage.getItem('access_token')
+        })
+    },
+})
+
+socket.on('connect', () => {
+    console.log('connected')
+})
+socket.on('disconnect', () => {
+    console.log('disconnected')
+})
 
 export const service = axios.create({
-    baseURL: 'http://10.17.233.184:3000'
+    baseURL: BASE_URL
 })
 
 service.interceptors.request.use(

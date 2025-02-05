@@ -1,4 +1,4 @@
-import { StyleSheet, FlatList } from "react-native";
+import { StyleSheet, FlatList, View } from "react-native";
 import { useEffect, useState } from "react";
 import { getPostList } from "@/service/home";
 import { PostType } from "@/types";
@@ -15,7 +15,7 @@ export default function HomeScreen() {
     });
   }, []);
   return (
-    <SafeAreaView>
+    <View>
       <HomePageHeader />
       <WaterFallList
         data={postList}
@@ -24,7 +24,7 @@ export default function HomeScreen() {
         numColumns={2}
         showsVerticalScrollIndicator={false}
       />
-    </SafeAreaView>
+    </View>
   );
 }
 

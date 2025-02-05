@@ -16,6 +16,7 @@ import ExploreScreen from "./explore";
 import TabBar from "@/components/home/TabBar";
 import { Drawer } from "react-native-drawer-layout";
 import DrawerContent from "@/components/home/DrawerContent";
+import MessageScreen from "./message";
 
 const Tab = createBottomTabNavigator();
 
@@ -36,7 +37,7 @@ export default function TabLayout() {
       Home: () => <HomeScreen />,
       Explore: () => <ExploreScreen />,
       Add: () => null,
-      Message: () => null,
+      Message: () => <MessageScreen />,
       Profile: () => <ProfileScreen />,
     }),
     []

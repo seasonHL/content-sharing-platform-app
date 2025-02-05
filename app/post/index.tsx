@@ -44,7 +44,6 @@ export default function PostPage() {
       {post ? (
         <ThemedView>
           <ThemedText>{post.title}</ThemedText>
-          <ThemedText>{post.content}</ThemedText>
           <View>
             {post.media.map((media) => (
               <Image
@@ -54,6 +53,7 @@ export default function PostPage() {
               />
             ))}
           </View>
+          <ThemedText>{post.content}</ThemedText>
         </ThemedView>
       ) : null}
     </ThemedSafeAreaView>

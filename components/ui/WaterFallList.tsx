@@ -16,10 +16,6 @@ const WaterFallList = (props: Props) => {
     return columnList;
   }, [data, numColumns]);
 
-  useEffect(() => {
-    console.log("columnList", columnList);
-    console.log("numColumns", numColumns);
-  });
   return (
     // FlatList不能直接嵌套在ScrollView中，不使用ScrollView会导致多列滚动不同步
     <ScrollView>
