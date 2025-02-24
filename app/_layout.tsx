@@ -12,6 +12,7 @@ import "react-native-reanimated";
 
 import { useColorScheme } from "@/hooks/useColorScheme";
 import { verify } from "@/service/auth";
+import { useUser } from "@/store";
 
 SplashScreen.preventAutoHideAsync();
 
@@ -20,11 +21,16 @@ export default function RootLayout() {
   const [loaded] = useFonts({
     SpaceMono: require("../assets/fonts/SpaceMono-Regular.ttf"),
   });
+  const userStore = useUser();
 
   useEffect(() => {
     if (loaded) {
       SplashScreen.hideAsync();
-      verify();
+      verify().then((res) => {
+        if (res.data) {
+          userStore.setUser(res.data);
+        }
+      });
     }
   }, [loaded]);
 
