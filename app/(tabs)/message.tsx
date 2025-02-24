@@ -17,7 +17,7 @@ const MessageScreen = () => {
   // 会话列表
   const [conversations, setConversations] = useState<ConversationType[]>([]);
   useEffect(() => {
-    getConversations().then((res) => {
+    getConversations(1).then((res) => {
       setConversations(res.data);
     });
 
@@ -43,7 +43,9 @@ const MessageScreen = () => {
               })
             }
           >
-            <View>
+            <View
+              style={{ backgroundColor: item.index % 2 ? "white" : "gray" }}
+            >
               <Text>{item.item.title}</Text>
               <Text>{item.item.last_message}</Text>
             </View>

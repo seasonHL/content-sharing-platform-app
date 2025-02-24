@@ -1,5 +1,6 @@
 import { socket } from "@/service";
-import { MessageType } from "@/types/message";
+import { getConversationDetail } from "@/service/message";
+import { ConversationType, MessageType } from "@/types/message";
 import { vw } from "@/utils";
 import { Ionicons } from "@expo/vector-icons";
 import { useLocalSearchParams } from "expo-router";
@@ -21,11 +22,15 @@ export default function ChatPage() {
   const params = useLocalSearchParams<ChatPageParams>();
   const [messageList, setMessageList] = useState<MessageType[]>([]);
   const [text, setText] = useState("");
+  const [conversationDetail, setConversationDetail] =
+    useState<ConversationType | null>(null);
 
   const sendMessage = () => {
+    if (!conversationDetail) return;
     const msg = {
       content: text,
-      receiver_id: 3,
+      receiver_id: conversationDetail.friend_id,
+      conversation_id: conversationDetail.conversation_id,
     } as MessageType;
     socket.emit("message", msg);
     setText("");
@@ -41,6 +46,12 @@ export default function ChatPage() {
         return [...prev, msg];
       });
     });
+
+    getConversationDetail(Number(params.conversationId)).then((res) => {
+      console.log(res);
+      setConversationDetail(res);
+      setMessageList(res.messages);
+    });
     return () => {
       socket.disconnect();
     };
@@ -51,7 +62,21 @@ export default function ChatPage() {
         <FlatList
           data={messageList}
           renderItem={({ item }) => {
-            return <Text>{item.content}</Text>;
+            const isMe = item.receiver_id !== conversationDetail?.user_id;
+            return (
+              <View
+                style={{
+                  flexDirection: isMe ? "row-reverse" : "row",
+                }}
+              >
+                <Text>头像</Text>
+                <Text
+                  style={[styles.msg, isMe ? styles.myMsg : styles.otherMsg]}
+                >
+                  {item.content}
+                </Text>
+              </View>
+            );
           }}
         />
       </View>
@@ -87,5 +112,19 @@ const styles = StyleSheet.create({
   },
   grow: {
     flex: 1,
+  },
+  msg: {
+    borderRadius: vw(10),
+    padding: vw(10),
+    margin: vw(10),
+    maxWidth: vw(320),
+  },
+  myMsg: {
+    color: "white",
+    backgroundColor: "blue",
+  },
+  otherMsg: {
+    color: "white",
+    backgroundColor: "gray",
   },
 });

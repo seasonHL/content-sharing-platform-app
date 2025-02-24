@@ -1,15 +1,19 @@
 import { service } from "."
 
-export const getConversations = async () => {
-    return {
-        data: [{
-            conversation_id: 1,
-            user_id: 1,
-            avatar: "",
-            title: 'John-Doe',
-            updated_at: '2021-01-01',
-            last_message: 'Hello',
-            unread: 1,
-        }]
-    }
+export const getConversations = async (user_id: number) => {
+    const res = await service.get('/conversation/list', {
+        params: {
+            user_id
+        }
+    })
+    return res.data
+}
+
+export const getConversationDetail = async (id: number) => {
+    const res = await service.get('/conversation/detail', {
+        params: {
+            id
+        }
+    })
+    return res.data
 }

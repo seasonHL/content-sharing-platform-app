@@ -6,10 +6,12 @@ export interface ConversationType {
     avatar: string
     last_message: string
     unread: number
+    friend_id: number
 }
 
 /** 消息实体类 */
 export interface MessageType {
+    conversation_id: number;
     /** 发送者 ID */
     sender_id: number;
     /** 接收者 ID */
@@ -23,5 +25,5 @@ export interface MessageType {
     /** 消息状态 */
     isRead: boolean;
     /** 关联的用户 ID */
-    user_id: number;
+    // user_id: number;
 }
