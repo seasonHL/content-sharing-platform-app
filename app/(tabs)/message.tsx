@@ -1,6 +1,8 @@
 import { socket } from "@/service";
 import { getConversations } from "@/service/message";
+import { useUser } from "@/store";
 import { ConversationType } from "@/types/message";
+import { timestampToTime, vw } from "@/utils";
 import { useRouter } from "expo-router";
 import { useEffect, useState } from "react";
 import {
@@ -9,15 +11,19 @@ import {
   TouchableHighlight,
   TouchableOpacity,
   View,
+  Image,
+  StyleSheet,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 const MessageScreen = () => {
   const router = useRouter();
+  const userStore = useUser();
   // 会话列表
   const [conversations, setConversations] = useState<ConversationType[]>([]);
   useEffect(() => {
-    getConversations(1).then((res) => {
+    if (!userStore.user) return;
+    getConversations(userStore.user.user_id).then((res) => {
       setConversations(res.data);
     });
 
@@ -43,11 +49,15 @@ const MessageScreen = () => {
               })
             }
           >
-            <View
-              style={{ backgroundColor: item.index % 2 ? "white" : "gray" }}
-            >
-              <Text>{item.item.title}</Text>
-              <Text>{item.item.last_message}</Text>
+            <View style={styles.conversation}>
+              <Image source={{ uri: item.item.avatar }} style={styles.avatar} />
+              <View>
+                <Text>{item.item.title}</Text>
+                <Text style={styles.description}>{item.item.last_message}</Text>
+              </View>
+              <Text style={[styles.mlAuto, styles.description]}>
+                {timestampToTime(item.item.updated_at)}
+              </Text>
             </View>
           </TouchableOpacity>
         )}
@@ -57,3 +67,24 @@ const MessageScreen = () => {
 };
 
 export default MessageScreen;
+
+const styles = StyleSheet.create({
+  conversation: {
+    flexDirection: "row",
+    alignItems: "center",
+    padding: vw(10),
+    gap: vw(10),
+  },
+  avatar: {
+    width: vw(50),
+    height: vw(50),
+    borderRadius: vw(25),
+  },
+  description: {
+    color: "gray",
+    fontSize: vw(12),
+  },
+  mlAuto: {
+    marginLeft: "auto",
+  },
+});

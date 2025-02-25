@@ -2,7 +2,7 @@ export interface ConversationType {
     conversation_id: number
     user_id: number
     title: string
-    updated_at: string
+    updated_at: Date | string | number
     avatar: string
     last_message: string
     unread: number

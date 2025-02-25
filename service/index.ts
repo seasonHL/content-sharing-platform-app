@@ -2,7 +2,7 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import axios from "axios";
 import io from "socket.io-client";
 
-const BASE_URL = 'http://192.168.4.125:3000'
+const BASE_URL = 'http://192.168.45.125:3000'
 
 export const socket = io(BASE_URL, {
     async auth(cb) {

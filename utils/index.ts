@@ -37,3 +37,25 @@ export function vw(designSize: number) {
     const scale = screenWidth / DESIGN_WIDTH;
     return PixelRatio.roundToNearestPixel(designSize * scale);
 }
+
+/**
+ * 时间戳转换
+ * 
+ * 当日显示时分，一周内显示星期几，一年内显示月日，超过一年显示年月日
+ */
+export function timestampToTime(timestamp: number | string | Date) {
+    const date = new Date(timestamp);
+    const now = new Date();
+    const diff = now.getTime() - date.getTime();
+    const diffDay = Math.floor(diff / (1000 * 60 * 60 * 24));
+    if (diffDay < 1) {
+        return date.toLocaleString('zh-CN', { hour: 'numeric', minute: 'numeric' });
+    }
+    if (diffDay < 7) {
+        return date.toLocaleString('zh-CN', { weekday: 'short' });
+    }
+    if (diffDay < 365) {
+        return date.toLocaleString('zh-CN', { month: 'short', day: 'numeric' });
+    }
+    return date.toLocaleString('zh-CN', { year: 'numeric', month: 'short', day: 'numeric' });
+}

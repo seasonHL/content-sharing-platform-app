@@ -1,5 +1,6 @@
 import { socket } from "@/service";
 import { getConversationDetail } from "@/service/message";
+import { useUser } from "@/store";
 import { ConversationType, MessageType } from "@/types/message";
 import { vw } from "@/utils";
 import { Ionicons } from "@expo/vector-icons";
@@ -12,6 +13,7 @@ import {
   StyleSheet,
   Button,
   FlatList,
+  Image,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
@@ -24,6 +26,7 @@ export default function ChatPage() {
   const [text, setText] = useState("");
   const [conversationDetail, setConversationDetail] =
     useState<ConversationType | null>(null);
+  const userStore = useUser();
 
   const sendMessage = () => {
     if (!conversationDetail) return;
@@ -65,11 +68,22 @@ export default function ChatPage() {
             const isMe = item.receiver_id !== conversationDetail?.user_id;
             return (
               <View
-                style={{
-                  flexDirection: isMe ? "row-reverse" : "row",
-                }}
+                style={[
+                  {
+                    flexDirection: isMe ? "row-reverse" : "row",
+                  },
+                  styles.alignCenter,
+                ]}
               >
-                <Text>头像</Text>
+                <Image
+                  style={styles.avatar}
+                  source={{
+                    uri: isMe
+                      ? userStore.user?.avatar
+                      : conversationDetail.avatar,
+                  }}
+                />
+
                 <Text
                   style={[styles.msg, isMe ? styles.myMsg : styles.otherMsg]}
                 >
@@ -87,7 +101,7 @@ export default function ChatPage() {
           onChangeText={setText}
         />
         {/* <Ionicons name="send" size={16} color="gray" /> */}
-        <Button title="Send" onPress={sendMessage} />
+        <Button title="发送" onPress={sendMessage} />
       </View>
     </SafeAreaView>
   );
@@ -126,5 +140,13 @@ const styles = StyleSheet.create({
   otherMsg: {
     color: "white",
     backgroundColor: "gray",
+  },
+  avatar: {
+    width: vw(40),
+    height: vw(40),
+    borderRadius: vw(20),
+  },
+  alignCenter: {
+    alignItems: "center",
   },
 });
