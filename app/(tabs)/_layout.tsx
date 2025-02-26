@@ -8,7 +8,6 @@ import React, {
 } from "react";
 import { Platform, ToastAndroid, View, Text } from "react-native";
 
-import AsyncStorage from "@react-native-async-storage/async-storage";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import HomeScreen from ".";
 import ProfileScreen from "./profile";
@@ -17,6 +16,7 @@ import TabBar from "@/components/home/TabBar";
 import { Drawer } from "react-native-drawer-layout";
 import DrawerContent from "@/components/home/DrawerContent";
 import MessageScreen from "./message";
+import { useToken } from "@/store";
 
 const Tab = createBottomTabNavigator();
 
@@ -31,6 +31,7 @@ export const DrawerContext = createContext<DrawerContextType>(defaultValue);
 export default function TabLayout() {
   const router = useRouter();
   const [open, setOpen] = useState(false);
+  const tokenStore = useToken();
 
   const screens = useMemo(
     () => ({
@@ -44,14 +45,11 @@ export default function TabLayout() {
   );
 
   useEffect(() => {
-    AsyncStorage.getItem("access_token").then((res) => {
-      console.log(res);
-      if (res === null) {
-        ToastAndroid.show("请先登录", 3);
-        router.navigate("/auth");
-      }
-    });
-  }, []);
+    if (tokenStore.token === null) {
+      ToastAndroid.show("请先登录", 3);
+      router.navigate("/auth");
+    }
+  }, [tokenStore.token]);
   return (
     <DrawerContext.Provider value={{ setOpen }}>
       <Drawer

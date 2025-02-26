@@ -3,8 +3,8 @@ import { getConversations } from "@/service/message";
 import { useUser } from "@/store";
 import { ConversationType } from "@/types/message";
 import { timestampToTime, vw } from "@/utils";
-import { useRouter } from "expo-router";
-import { useEffect, useState } from "react";
+import { useFocusEffect, useRouter } from "expo-router";
+import { useCallback, useEffect, useState } from "react";
 import {
   FlatList,
   Text,
@@ -21,12 +21,16 @@ const MessageScreen = () => {
   const userStore = useUser();
   // 会话列表
   const [conversations, setConversations] = useState<ConversationType[]>([]);
-  useEffect(() => {
-    if (!userStore.user) return;
-    getConversations(userStore.user.user_id).then((res) => {
-      setConversations(res.data);
-    });
 
+  useFocusEffect(
+    useCallback(() => {
+      if (!userStore.user) return;
+      getConversations(userStore.user.user_id).then((res) => {
+        setConversations(res.data);
+      });
+    }, [])
+  );
+  useEffect(() => {
     socket.on("message", (msg) => {
       console.log(msg);
     });

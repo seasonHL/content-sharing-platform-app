@@ -1,5 +1,5 @@
-import AsyncStorage from "@react-native-async-storage/async-storage"
 import { service } from "."
+import { useToken } from "@/store"
 
 export interface ILoginData {
     username: string
@@ -9,7 +9,7 @@ export const login = async (data: ILoginData) => {
     const res = await service.post('/auth/login', data)
     const { access_token } = res.data;
     if (access_token) {
-        await AsyncStorage.setItem('access_token', access_token)
+        useToken.setState({ token: access_token })
     } else {
         throw Error('登录错误')
     }

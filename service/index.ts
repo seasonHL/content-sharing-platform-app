@@ -1,4 +1,4 @@
-import AsyncStorage from "@react-native-async-storage/async-storage";
+import { useToken } from "@/store";
 import axios from "axios";
 import io from "socket.io-client";
 
@@ -7,7 +7,7 @@ const BASE_URL = 'http://192.168.45.125:3000'
 export const socket = io(BASE_URL, {
     async auth(cb) {
         cb({
-            token: await AsyncStorage.getItem('access_token')
+            token: useToken.getState().token
         })
     },
 })
@@ -25,7 +25,7 @@ export const service = axios.create({
 
 service.interceptors.request.use(
     async (config) => {
-        const token = await AsyncStorage.getItem('access_token')
+        const token = useToken.getState().token
         if (token) {
             config.headers.Authorization = `Bearer ${token}`
         }
@@ -42,7 +42,7 @@ service.interceptors.response.use(
     },
     (error) => {
         if (error.status === 401) {
-            AsyncStorage.removeItem('access_token')
+            useToken.getState().clearToken()
         }
         return Promise.reject(error)
     }
