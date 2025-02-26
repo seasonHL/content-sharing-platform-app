@@ -1,19 +1,24 @@
 import { StyleSheet, FlatList, View } from "react-native";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { getPostList } from "@/service/home";
 import { PostType } from "@/types";
 import PostCard from "@/components/home/PostCard";
 import HomePageHeader from "@/components/home/Header";
 import { SafeAreaView } from "react-native-safe-area-context";
 import WaterFallList from "@/components/ui/WaterFallList";
+import { useFocusEffect } from "expo-router";
 
 export default function HomeScreen() {
   const [postList, setPostList] = useState<PostType[]>([]);
-  useEffect(() => {
-    getPostList().then((res) => {
-      setPostList(res);
-    });
-  }, []);
+
+  useFocusEffect(
+    useCallback(() => {
+      getPostList().then((res) => {
+        setPostList(res);
+      });
+    }, [])
+  );
+
   return (
     <View>
       <HomePageHeader />

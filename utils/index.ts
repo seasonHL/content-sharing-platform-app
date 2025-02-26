@@ -1,4 +1,4 @@
-import { Dimensions, PixelRatio } from "react-native";
+import { Dimensions, PixelRatio, Image } from "react-native";
 
 /**
  * 从对象中选择指定的键值对
@@ -58,4 +58,23 @@ export function timestampToTime(timestamp: number | string | Date) {
         return date.toLocaleString('zh-CN', { month: 'short', day: 'numeric' });
     }
     return date.toLocaleString('zh-CN', { year: 'numeric', month: 'short', day: 'numeric' });
+}
+
+/**
+ * 获取图片尺寸
+ * @param url - 图片URL
+ * @returns 图片尺寸
+ */
+export function getImageSize(url: string): Promise<{ width: number; height: number }> {
+    return new Promise((resolve, reject) => {
+        Image.getSize(
+            url,
+            (width, height) => {
+                resolve({ width, height });
+            },
+            (error) => {
+                reject(new Error(`Failed to load image from URL: ${url}. Error: ${error}`));
+            }
+        );
+    });
 }
