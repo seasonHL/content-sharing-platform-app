@@ -51,7 +51,6 @@ export default function ChatPage() {
     });
 
     getConversationDetail(Number(params.conversationId)).then((res) => {
-      console.log(res);
       setConversationDetail(res);
       setMessageList(res.messages);
     });

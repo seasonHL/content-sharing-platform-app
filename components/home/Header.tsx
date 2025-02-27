@@ -4,9 +4,11 @@ import { StatusBar, StyleSheet, Text, View } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import { DrawerContext } from "@/app/(tabs)/_layout";
 import { useContext } from "react";
+import { useRouter } from "expo-router";
 
 export default function HomePageHeader() {
   const drawerCtx = useContext(DrawerContext);
+  const router = useRouter();
 
   return (
     <ThemedView style={styles.container}>
@@ -17,7 +19,12 @@ export default function HomePageHeader() {
         onPress={() => drawerCtx.setOpen(true)}
       />
       <View style={[styles.mlAuto]}>
-        <Ionicons name="search" size={24} color="gray" />
+        <Ionicons
+          name="search"
+          size={24}
+          color="gray"
+          onPress={() => router.push({ pathname: "/search" })}
+        />
       </View>
     </ThemedView>
   );
