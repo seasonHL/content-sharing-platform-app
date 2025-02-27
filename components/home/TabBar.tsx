@@ -4,10 +4,12 @@ import React, { memo } from "react";
 import { ThemedText } from "../ui/ThemedText";
 import { ThemedView } from "../ui/ThemedView";
 import { PlatformPressable } from "@react-navigation/elements";
+import { useRouter } from "expo-router";
 
 function TabBar({ state, descriptors, navigation }: BottomTabBarProps) {
   const { colors } = useTheme();
   const { buildHref } = useLinkBuilder();
+  const router = useRouter();
   return (
     <ThemedView style={{ flexDirection: "row" }}>
       {state.routes.map((route, index) => {
@@ -22,6 +24,11 @@ function TabBar({ state, descriptors, navigation }: BottomTabBarProps) {
         const isFocused = state.index === index;
 
         const onPress = () => {
+          // 如果点击的是添加按钮，跳转到编辑页面
+          if (route.name === "Add") {
+            router.push("/camera");
+            return;
+          }
           const event = navigation.emit({
             type: "tabPress",
             target: route.key,
