@@ -17,14 +17,13 @@ const WaterFallList = (props: Props) => {
   }, [data, numColumns]);
 
   return (
-    // FlatList不能直接嵌套在ScrollView中，不使用ScrollView会导致多列滚动不同步
-    <ScrollView>
-      <View style={{ flexDirection: "row" }}>
-        {columnList.map((item, index) => (
-          <FlatList key={index} data={item} {...rest} />
-        ))}
-      </View>
-    </ScrollView>
+    <FlatList
+      data={columnList}
+      numColumns={numColumns}
+      showsVerticalScrollIndicator={false}
+      keyExtractor={(item, index) => index.toString()}
+      renderItem={({ item }) => <FlatList data={item} {...rest} />}
+    />
   );
 };
 
