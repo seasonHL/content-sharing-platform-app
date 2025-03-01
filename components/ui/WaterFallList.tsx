@@ -8,7 +8,7 @@ const WaterFallList = (props: Props) => {
     return null;
   }
   const columnList = useMemo(() => {
-    const columnLength = data.length / numColumns;
+    const columnLength = Math.ceil(data.length / numColumns);
     const array = Array.from(data);
     const columnList = Array.from({ length: numColumns }, (v, k) =>
       array.slice(k * columnLength, (k + 1) * columnLength)

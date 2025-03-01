@@ -20,8 +20,10 @@ export default function ExploreScreen() {
     }, [])
   );
   return (
-    <ThemedSafeAreaView>
-      <SearchBar left={null} />
+    <>
+      <ThemedSafeAreaView>
+        <SearchBar left={null} />
+      </ThemedSafeAreaView>
       <WaterFallList
         data={productList}
         renderItem={({ item }) => <ProductCard product={item} />}
@@ -29,7 +31,7 @@ export default function ExploreScreen() {
         numColumns={2}
         showsVerticalScrollIndicator={false}
       />
-    </ThemedSafeAreaView>
+    </>
   );
 }
 
