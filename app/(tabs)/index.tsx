@@ -20,7 +20,7 @@ export default function HomeScreen() {
   );
 
   return (
-    <View>
+    <>
       <HomePageHeader />
       <WaterFallList
         data={postList}
@@ -29,12 +29,8 @@ export default function HomeScreen() {
         numColumns={2}
         showsVerticalScrollIndicator={false}
       />
-    </View>
+    </>
   );
 }
 
-const styles = StyleSheet.create({
-  list: {
-    margin: "auto",
-  },
-});
+const styles = StyleSheet.create({});

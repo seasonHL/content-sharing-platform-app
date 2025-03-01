@@ -26,6 +26,7 @@ const MessageScreen = () => {
     useCallback(() => {
       if (!userStore.user) return;
       getConversations(userStore.user.user_id).then((res) => {
+        console.log(res);
         setConversations(res.data);
       });
     }, [])

@@ -1,4 +1,5 @@
 export { PostType, MediaType } from './home'
+export { ProductType } from './shop'
 
 export enum EGender {
     male = 'male',
