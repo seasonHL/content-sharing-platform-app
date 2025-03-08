@@ -1,6 +1,6 @@
 import type { FC, ReactNode } from "react";
 interface Props {
-  when: boolean;
+  when: boolean | ReactNode;
   children: ReactNode;
 }
 export const Show: FC<Props> = ({ when, children }) => {

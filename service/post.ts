@@ -1,5 +1,7 @@
 import { ICreateComment } from "@/types/post"
 import { service } from "."
+import { IResult } from "@/types"
+import { CommentType } from "@/types/home"
 
 export const getPostDetail = async (post_id: string) => {
     const res = await service.get(`/post/detail`, {
@@ -32,7 +34,7 @@ export const getReplyList = async (comment_id: number) => {
     return res.data
 }
 
-export const createComment = async (data: ICreateComment) => {
+export const createComment = async (data: ICreateComment): IResult<CommentType> => {
     const res = await service.post(`/comment/create`, data)
     return res.data
 }

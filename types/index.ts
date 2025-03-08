@@ -31,3 +31,11 @@ export interface User {
     /** 生日，存储用户的出生日期 */
     birthdate: Date;
 }
+
+export interface IData<T = unknown> {
+    code: number
+    data: T
+    msg: string
+}
+
+export type IResult<T = unknown> = Promise<IData<T>>

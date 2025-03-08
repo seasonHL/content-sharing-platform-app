@@ -22,10 +22,10 @@ import PagerView from "react-native-pager-view";
 import { AntDesign } from "@expo/vector-icons";
 import { useRouter } from "expo-router";
 import { CommentType } from "@/types/home";
-import { Comment } from "@/components/ui/Comment";
-import { Show } from "@/components/ui/Show";
 import { CommentEditor } from "./../../components/ui/CommentEditor";
-import { useUser } from "@/store";
+import { useCommentStore, useUser } from "@/store";
+import { BaseComment } from "@/components/ui/BaseComment";
+import { commentAdapter, replyAdapter } from "@/store/post";
 
 type PostPageParams = {
   postId: string;
@@ -33,21 +33,48 @@ type PostPageParams = {
 export default function PostPage() {
   const params = useLocalSearchParams<PostPageParams>();
   const userStore = useUser();
+  const commentStore = useCommentStore();
   const [post, setPost] = useState<PostType | null>(null);
   const [author, setAuthor] = useState<User | null>(null);
   const router = useRouter();
   const [imageHeight, setImageHeight] = useState(0);
-  const [commentList, setCommentList] = useState<CommentType[] | null>(null);
   const [show, setShow] = useState(false);
-  const [selectedComment, setSelectedComment] = useState<CommentType | null>(
-    null
-  );
 
   const imageSizeList = useMemo(() => {
     return post?.media.map((media) => {
       return getImageSize(media.media_url);
     });
   }, [post?.media]);
+
+  const sendComment = async (content: string) => {
+    try {
+      const comment = {
+        comment_text: content,
+        post_id: params.postId,
+        parent_comment_id: commentStore.parentComment?.commentId,
+        target_comment_id: commentStore.targetComment?.commentId,
+        user_id: userStore.user!.user_id,
+      };
+      const res = await createComment(comment);
+      if (res.data.parent_comment_id) {
+        const cmt = {
+          ...res.data,
+          user: userStore.user!,
+          target: commentStore.targetComment,
+        };
+        commentStore.addReply(res.data.parent_comment_id, replyAdapter(cmt));
+      } else {
+        const cmt = {
+          ...res.data,
+          user: userStore.user!,
+        };
+        commentStore.addComment(commentAdapter(cmt));
+      }
+      setShow(false);
+      commentStore.setParentComment(null);
+      commentStore.setTargetComment(null);
+    } catch (error) {}
+  };
 
   useEffect(() => {
     if (imageSizeList) {
@@ -77,9 +104,13 @@ export default function PostPage() {
         });
 
       getCommentList(params.postId).then((res) => {
-        setCommentList(res.data);
+        commentStore.addComment(res.data.map(commentAdapter));
       });
     }
+
+    return () => {
+      commentStore.reset();
+    };
   }, []);
   return (
     <>
@@ -123,22 +154,14 @@ export default function PostPage() {
         ) : null}
         <View style={styles.line}></View>
         <FlatList
-          data={commentList}
-          keyExtractor={(item) => item.comment_id.toFixed()}
+          data={commentStore.comments}
+          keyExtractor={(item) => item.commentId.toFixed()}
           renderItem={({ item }) => (
-            <Comment
-              key={item.comment_id}
+            <BaseComment
+              key={item.commentId}
               comment={item}
               user={item.user}
-              replies={[]}
-              onReply={(comment) => {
-                setSelectedComment(comment);
-                setShow(true);
-              }}
-              onSubReply={(parent, comment) => {
-                setSelectedComment(parent);
-                setShow(true);
-              }}
+              onReply={() => setShow(true)}
             />
           )}
         />
@@ -157,20 +180,7 @@ export default function PostPage() {
       <CommentEditor
         show={show}
         onCancel={() => setShow(false)}
-        onSend={(content) => {
-          createComment({
-            comment_text: content,
-            post_id: params.postId,
-            parent_comment_id: selectedComment?.comment_id,
-            user_id: userStore.user!.user_id,
-          })
-            .then((res) => {
-              setShow(false);
-            })
-            .catch((err) => {
-              console.log(err);
-            });
-        }}
+        onSend={sendComment}
       />
     </>
   );

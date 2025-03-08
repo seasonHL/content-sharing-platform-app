@@ -27,5 +27,6 @@ export interface CommentType {
         username: string
         avatar: string
     }
-    replies?: CommentType[]
+    targetComment?: CommentType
+    replyList?: CommentType[]
 }
