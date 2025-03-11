@@ -11,7 +11,7 @@ export const login = async (data: ILoginData) => {
     if (access_token) {
         useToken.setState({ token: access_token })
     } else {
-        throw Error('登录错误')
+        return false
     }
     return true
 }

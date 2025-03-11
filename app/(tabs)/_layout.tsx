@@ -32,6 +32,7 @@ export default function TabLayout() {
   const router = useRouter();
   const [open, setOpen] = useState(false);
   const tokenStore = useToken();
+  const [mounted, setMounted] = useState(false);
 
   const screens = useMemo(
     () => ({
@@ -45,11 +46,16 @@ export default function TabLayout() {
   );
 
   useEffect(() => {
+    if (!mounted) return;
     if (tokenStore.token === null) {
       ToastAndroid.show("请先登录", 3);
       router.navigate("/auth");
     }
-  }, [tokenStore.token]);
+  }, [tokenStore.token, mounted]);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
   return (
     <DrawerContext.Provider value={{ setOpen }}>
       <Drawer

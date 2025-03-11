@@ -45,12 +45,13 @@ export default function AuthPage() {
   const router = useRouter();
   const handleLogin = async () => {
     try {
-      await login(state);
-      router.navigate("/");
-    } catch (error) {
-      console.log(error);
-      ToastAndroid.show("账号或密码错误", 3);
-    }
+      const flag = await login(state);
+      if (flag) {
+        router.navigate("/");
+      } else {
+        ToastAndroid.show("账号或密码错误", 3);
+      }
+    } catch (error) {}
   };
   return (
     <SafeAreaView style={styles.container}>
