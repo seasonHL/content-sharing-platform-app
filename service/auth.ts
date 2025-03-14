@@ -7,9 +7,12 @@ export interface ILoginData {
 }
 export const login = async (data: ILoginData) => {
     const res = await service.post('/auth/login', data)
-    const { access_token } = res.data;
+    const { access_token, refresh_token } = res.data;
     if (access_token) {
-        useToken.setState({ token: access_token })
+        useToken.setState({
+            access_token,
+            refresh_token
+        })
     } else {
         return false
     }

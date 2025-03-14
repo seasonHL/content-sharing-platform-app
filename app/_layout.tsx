@@ -12,7 +12,7 @@ import "react-native-reanimated";
 
 import { useColorScheme } from "@/hooks/useColorScheme";
 import { verify } from "@/service/auth";
-import { useUser } from "@/store";
+import { useToken, useUser } from "@/store";
 
 SplashScreen.preventAutoHideAsync();
 
@@ -22,17 +22,21 @@ export default function RootLayout() {
     SpaceMono: require("../assets/fonts/SpaceMono-Regular.ttf"),
   });
   const userStore = useUser();
+  const tokenStore = useToken();
 
   useEffect(() => {
     if (loaded) {
       SplashScreen.hideAsync();
-      verify().then((res) => {
-        if (res.data) {
-          userStore.setUser(res.data);
-        }
-      });
     }
   }, [loaded]);
+
+  useEffect(() => {
+    verify().then((res) => {
+      if (res.data) {
+        userStore.setUser(res.data);
+      }
+    });
+  }, [tokenStore.access_token]);
 
   if (!loaded) {
     return null;

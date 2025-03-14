@@ -30,7 +30,7 @@ export default function ProfileScreen() {
       getPostList({ user_id: userStore.user.user_id }).then((res) => {
         setPostList(res);
       });
-    }, [])
+    }, [userStore.user])
   );
 
   return (

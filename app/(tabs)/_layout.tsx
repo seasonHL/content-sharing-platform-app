@@ -47,11 +47,11 @@ export default function TabLayout() {
 
   useEffect(() => {
     if (!mounted) return;
-    if (tokenStore.token === null) {
+    if (tokenStore.access_token === null) {
       ToastAndroid.show("请先登录", 3);
       router.navigate("/auth");
     }
-  }, [tokenStore.token, mounted]);
+  }, [tokenStore.access_token, mounted]);
 
   useEffect(() => {
     setMounted(true);
