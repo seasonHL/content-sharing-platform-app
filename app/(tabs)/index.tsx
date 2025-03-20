@@ -14,6 +14,9 @@ export default function HomeScreen() {
   useFocusEffect(
     useCallback(() => {
       getPostList().then((res) => {
+        if (!res) {
+          return;
+        }
         setPostList(res);
       });
     }, [])
