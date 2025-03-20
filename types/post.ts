@@ -5,3 +5,13 @@ export interface ICreateComment {
     user_id: number
     comment_text: string
 }
+
+export interface ICreatePost {
+    title: string
+    content: string
+    author_id: number
+    media: {
+        media_url: string
+        media_type: string
+    }[]
+}

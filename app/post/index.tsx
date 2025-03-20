@@ -203,8 +203,8 @@ const styles = StyleSheet.create({
     marginHorizontal: vw(8),
   },
   image: {
-    width: "100%",
-    height: vw(320),
+    flex: 1,
+    resizeMode: "contain",
   },
   title: {
     fontSize: vw(18),

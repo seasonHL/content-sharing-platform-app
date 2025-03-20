@@ -11,26 +11,51 @@ import {
   StyleSheet,
   TouchableNativeFeedback,
   ToastAndroid,
+  Alert,
 } from "react-native";
 import * as FileSystem from "expo-file-system";
 import { requestPermission } from "@/utils/permission";
 import { AntDesign } from "@expo/vector-icons";
 import { vw } from "@/utils";
 import { Show } from "@/components/ui/Show";
+import { uploadImagesByUris } from "@/service/upload";
+import { useUser } from "@/store";
+import { createPost } from "@/service/post";
 
 type EditPageParams = {
   uri: string;
 };
 export default function EditPage() {
   const params = useLocalSearchParams<EditPageParams>();
+  const userStore = useUser();
   const [selectedImage, setSelectedImage] = useState<string[]>([]);
+  const [title, setTitle] = useState<string>("");
   const [content, setContent] = useState<string>("");
 
   const publish = async () => {
-    router.dismissAll();
-    router.push({
-      pathname: "/",
-    });
+    if (!selectedImage.length) {
+      ToastAndroid.show("请选择图片", ToastAndroid.SHORT);
+      return;
+    }
+    try {
+      const { data: urls } = await uploadImagesByUris(selectedImage);
+      const post = {
+        title,
+        content,
+        author_id: userStore.user!.user_id,
+        media: urls.map((url) => ({
+          media_url: url,
+          media_type: "image",
+        })),
+      };
+      await createPost(post);
+      router.dismissAll();
+      router.push({
+        pathname: "/",
+      });
+    } catch (error) {
+      console.error(error);
+    }
   };
 
   const pickImage = async () => {
@@ -48,6 +73,24 @@ export default function EditPage() {
     if (!result.canceled) {
       setSelectedImage([...selectedImage, result.assets[0].uri]);
     }
+  };
+
+  const handleImageLongPress = (index: number) => {
+    Alert.alert("删除图片", "确定删除这张图片吗", [
+      {
+        text: "取消",
+        style: "cancel",
+      },
+      {
+        text: "删除",
+        onPress: () => {
+          const newImages = [...selectedImage];
+          newImages.splice(index, 1);
+          setSelectedImage(newImages);
+        },
+        style: "destructive",
+      },
+    ]);
   };
 
   useEffect(() => {
@@ -70,7 +113,12 @@ export default function EditPage() {
       <View style={styles.gallery}>
         <Show when={!!selectedImage}>
           {selectedImage.map((uri, index) => (
-            <Image key={index} source={{ uri }} style={styles.image} />
+            <TouchableNativeFeedback
+              key={index}
+              onLongPress={() => handleImageLongPress(index)}
+            >
+              <Image source={{ uri }} style={styles.image} />
+            </TouchableNativeFeedback>
           ))}
         </Show>
         <Show when={selectedImage.length < 9}>
@@ -82,6 +130,12 @@ export default function EditPage() {
         </Show>
       </View>
       <View>
+        <TextInput
+          placeholder="添加标题"
+          cursorColor={"red"}
+          onChangeText={setTitle}
+          style={styles.tile}
+        />
         <TextInput
           placeholder="添加正文"
           cursorColor={"red"}
@@ -125,5 +179,9 @@ const styles = StyleSheet.create({
   bottomBar: {
     marginTop: "auto",
     padding: vw(16),
+  },
+  tile: {
+    fontSize: vw(18),
+    fontWeight: "bold",
   },
 });
