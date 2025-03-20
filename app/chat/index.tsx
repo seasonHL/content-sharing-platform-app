@@ -1,11 +1,11 @@
-import { socket } from "@/service";
+import { useSocket } from "@/hooks/useSocket";
 import { getConversationDetail } from "@/service/message";
 import { useUser } from "@/store";
 import { ConversationType, MessageType } from "@/types/message";
 import { vw } from "@/utils";
 import { Ionicons } from "@expo/vector-icons";
 import { useLocalSearchParams } from "expo-router";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import {
   Text,
   TextInput,
@@ -27,6 +27,18 @@ export default function ChatPage() {
   const [conversationDetail, setConversationDetail] =
     useState<ConversationType | null>(null);
   const userStore = useUser();
+  const socket = useSocket(
+    useMemo(
+      () => ({
+        onMessage: (msg: MessageType) => {
+          setMessageList((prev) => {
+            return [...prev, msg];
+          });
+        },
+      }),
+      [setMessageList]
+    )
+  );
 
   const sendMessage = () => {
     if (!conversationDetail) return;
@@ -43,20 +55,10 @@ export default function ChatPage() {
   };
 
   useEffect(() => {
-    socket.connect();
-    socket.on("message", (msg) => {
-      setMessageList((prev) => {
-        return [...prev, msg];
-      });
-    });
-
     getConversationDetail(Number(params.conversationId)).then((res) => {
       setConversationDetail(res);
       setMessageList(res.messages);
     });
-    return () => {
-      socket.disconnect();
-    };
   }, []);
   return (
     <SafeAreaView style={styles.container}>

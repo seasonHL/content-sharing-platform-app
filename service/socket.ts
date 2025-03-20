@@ -4,8 +4,9 @@ import { BASE_URL } from ".";
 
 export const socket = io(BASE_URL, {
     async auth(cb) {
+        const token = useToken.getState().access_token
         cb({
-            token: useToken.getState().access_token
+            token
         })
     },
 })

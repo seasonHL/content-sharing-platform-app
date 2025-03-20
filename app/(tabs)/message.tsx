@@ -1,10 +1,12 @@
-import { socket } from "@/service";
+// import { socket } from "@/service";
+import { useSocket } from "@/hooks/useSocket";
+import { BASE_URL } from "@/service";
 import { getConversations } from "@/service/message";
-import { useUser } from "@/store";
+import { useToken, useUser } from "@/store";
 import { ConversationType } from "@/types/message";
 import { timestampToTime, vw } from "@/utils";
 import { useFocusEffect, useRouter } from "expo-router";
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import {
   FlatList,
   Text,
@@ -22,6 +24,8 @@ const MessageScreen = () => {
   // 会话列表
   const [conversations, setConversations] = useState<ConversationType[]>([]);
 
+  const socket = useSocket();
+
   useFocusEffect(
     useCallback(() => {
       if (!userStore.user) return;
@@ -30,14 +34,6 @@ const MessageScreen = () => {
       });
     }, [userStore.user])
   );
-  useEffect(() => {
-    socket.on("message", (msg) => {
-      console.log(msg);
-    });
-    return () => {
-      socket.disconnect();
-    };
-  }, []);
   return (
     <SafeAreaView>
       <FlatList
