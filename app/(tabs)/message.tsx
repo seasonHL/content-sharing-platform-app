@@ -17,6 +17,7 @@ import {
   StyleSheet,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
+import * as Notifications from "expo-notifications";
 
 const MessageScreen = () => {
   const router = useRouter();
@@ -24,7 +25,25 @@ const MessageScreen = () => {
   // 会话列表
   const [conversations, setConversations] = useState<ConversationType[]>([]);
 
-  const socket = useSocket();
+  const socket = useSocket(
+    useMemo(
+      () => ({
+        onMessage: (msg) => {
+          Notifications.scheduleNotificationAsync({
+            content: {
+              title:
+                conversations.find(
+                  (conv) => conv.conversation_id === msg.conversation_id
+                )?.title || "消息",
+              body: msg.content,
+            },
+            trigger: null,
+          });
+        },
+      }),
+      [conversations]
+    )
+  );
 
   useFocusEffect(
     useCallback(() => {

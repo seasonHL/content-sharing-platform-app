@@ -21,10 +21,13 @@ export function useSocket(options?: SocketAction) {
     }, [tokenStore.access_token]);
     useEffect(() => {
         socket.connect();
+        // 监听消息事件，每次调用都会添加一个新的监听器
         socket.on("message", (msg) => {
             options?.onMessage?.(msg);
         });
         return () => {
+            // 每次组件卸载时，断开连接并移除所有事件监听器
+            socket.removeAllListeners();
             socket.disconnect();
         };
     }, [socket, options]);
