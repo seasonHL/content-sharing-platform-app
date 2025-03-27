@@ -7,15 +7,25 @@ import {
   NativeSyntheticEvent,
   StyleSheet,
   TouchableOpacity,
+  View,
+  Text,
 } from "react-native";
 import { ThemedText } from "../ui/ThemedText";
 import { useRouter } from "expo-router";
 import { vw } from "@/utils";
+import Checkbox from "expo-checkbox";
+
+interface ProductLike extends ProductType {
+  selected?: boolean;
+}
 
 interface Props {
-  product: ProductType;
+  product: ProductLike;
+  type?: "list" | "grid";
+  withCheck?: boolean;
+  onPress?: () => void;
 }
-const ProductCard: FC<Props> = ({ product }) => {
+const ProductCard: FC<Props> = ({ product, type, withCheck, onPress }) => {
   const router = useRouter();
   const [aspectRatio, setAspectRatio] = useState(1);
 
@@ -32,16 +42,33 @@ const ProductCard: FC<Props> = ({ product }) => {
     };
   }, [product]);
 
-  const onPress = () => {
-    router.push({
-      pathname: "/product",
-      params: {
-        productId: product.id,
-      },
-    });
+  const pressHandler = onPress
+    ? onPress
+    : () => {
+        router.push({
+          pathname: "/product",
+          params: {
+            productId: product.id,
+          },
+        });
+      };
+
+  const renderList = () => {
+    return (
+      <View style={styles.listItem}>
+        {withCheck && <Checkbox value={product.selected} color={"gray"} />}
+        <Image style={styles.lCover} source={{ uri: product.image }} />
+        <View style={styles.lInfo}>
+          <Text style={styles.lName}>{product.name}</Text>
+          <Text style={styles.lDescription}>{product.description}</Text>
+          <Text style={styles.lPrice}>￥{product.price}</Text>
+        </View>
+      </View>
+    );
   };
-  return (
-    <TouchableOpacity onPress={onPress} style={styles.container}>
+
+  const renderGrid = () => {
+    return (
       <ThemedView style={styles.card}>
         <Image
           source={{ uri: productEntry.cover }}
@@ -56,6 +83,11 @@ const ProductCard: FC<Props> = ({ product }) => {
           <ThemedText style={styles.price}>￥{product.price}</ThemedText>
         </ThemedView>
       </ThemedView>
+    );
+  };
+  return (
+    <TouchableOpacity onPress={pressHandler} style={styles.container}>
+      {type === "list" ? renderList() : renderGrid()}
     </TouchableOpacity>
   );
 };
@@ -83,6 +115,37 @@ const styles = StyleSheet.create({
     color: "gray",
   },
   price: {
+    fontSize: vw(16),
+    fontWeight: "bold",
+    color: "red",
+  },
+
+  listItem: {
+    flexDirection: "row",
+    alignItems: "center",
+    padding: vw(10),
+    marginBottom: vw(10),
+    backgroundColor: "#fff",
+    borderRadius: vw(4),
+  },
+  lCover: {
+    width: vw(64),
+    height: vw(64),
+    marginHorizontal: vw(10),
+    borderRadius: vw(4),
+  },
+  lInfo: {
+    flex: 1,
+  },
+  lName: {
+    fontSize: vw(18),
+    fontWeight: "bold",
+  },
+  lDescription: {
+    fontSize: vw(14),
+    color: "gray",
+  },
+  lPrice: {
     fontSize: vw(16),
     fontWeight: "bold",
     color: "red",
