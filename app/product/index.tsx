@@ -1,5 +1,5 @@
 import { ThemedSafeAreaView } from "@/components/ui/ThemedSafeAreaView";
-import { getProduct } from "@/service/shop";
+import { addToCart, getProduct } from "@/service/shop";
 import { ProductType } from "@/types";
 import { getImageSize, vw } from "@/utils";
 import { useLocalSearchParams } from "expo-router";
@@ -12,12 +12,23 @@ import {
   ScrollView,
   Button,
   TouchableHighlight,
+  ToastAndroid,
 } from "react-native";
 
 export default function ProductPage() {
   const params = useLocalSearchParams<{ productId: string }>();
   const [product, setProduct] = useState<ProductType | null>(null);
   const [imageHeight, setImageHeight] = useState(0);
+
+  const handleAddToCart = async () => {
+    try {
+      if (product) {
+        // 调用添加到购物车的函数
+        await addToCart([product.id]);
+        ToastAndroid.show("添加购物车成功", ToastAndroid.SHORT);
+      }
+    } catch (error) {}
+  };
 
   useEffect(() => {
     if (product) {
@@ -52,7 +63,7 @@ export default function ProductPage() {
       </ScrollView>
       <View style={styles.bottomBar}>
         <View style={styles.action}>
-          <TouchableHighlight style={styles.btnL}>
+          <TouchableHighlight style={styles.btnL} onPress={handleAddToCart}>
             <Text style={styles.btnTextL}>加入购物车</Text>
           </TouchableHighlight>
           <TouchableHighlight style={styles.btnR}>
@@ -102,7 +113,7 @@ const styles = StyleSheet.create({
     paddingVertical: vw(8),
     borderTopLeftRadius: vw(20),
     borderBottomLeftRadius: vw(20),
-    backgroundColor: "blue",
+    backgroundColor: "#8BC6EC",
   },
   btnTextL: {
     color: "white",

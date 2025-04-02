@@ -14,3 +14,19 @@ export interface PostType {
     is_published: boolean
     media: MediaType[]
 }
+
+export interface CommentType {
+    comment_id: number
+    post_id: number
+    parent_comment_id: number
+    comment_text: string
+    created_at: Date
+    updated_at: Date
+    user: {
+        user_id: number
+        username: string
+        avatar: string
+    }
+    targetComment?: CommentType
+    replyList?: CommentType[]
+}

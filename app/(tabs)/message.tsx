@@ -1,10 +1,12 @@
-import { socket } from "@/service";
+// import { socket } from "@/service";
+import { useSocket } from "@/hooks/useSocket";
+import { BASE_URL } from "@/service";
 import { getConversations } from "@/service/message";
-import { useUser } from "@/store";
+import { useToken, useUser } from "@/store";
 import { ConversationType } from "@/types/message";
 import { timestampToTime, vw } from "@/utils";
 import { useFocusEffect, useRouter } from "expo-router";
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import {
   FlatList,
   Text,
@@ -15,6 +17,7 @@ import {
   StyleSheet,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
+import * as Notifications from "expo-notifications";
 
 const MessageScreen = () => {
   const router = useRouter();
@@ -22,23 +25,34 @@ const MessageScreen = () => {
   // 会话列表
   const [conversations, setConversations] = useState<ConversationType[]>([]);
 
+  const socket = useSocket(
+    useMemo(
+      () => ({
+        onMessage: (msg) => {
+          Notifications.scheduleNotificationAsync({
+            content: {
+              title:
+                conversations.find(
+                  (conv) => conv.conversation_id === msg.conversation_id
+                )?.title || "消息",
+              body: msg.content,
+            },
+            trigger: null,
+          });
+        },
+      }),
+      [conversations]
+    )
+  );
+
   useFocusEffect(
     useCallback(() => {
       if (!userStore.user) return;
       getConversations(userStore.user.user_id).then((res) => {
-        console.log(res);
         setConversations(res.data);
       });
-    }, [])
+    }, [userStore.user])
   );
-  useEffect(() => {
-    socket.on("message", (msg) => {
-      console.log(msg);
-    });
-    return () => {
-      socket.disconnect();
-    };
-  }, []);
   return (
     <SafeAreaView>
       <FlatList

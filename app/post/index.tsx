@@ -1,31 +1,80 @@
 import { ThemedSafeAreaView } from "@/components/ui/ThemedSafeAreaView";
 import { ThemedText } from "@/components/ui/ThemedText";
 import { ThemedView } from "@/components/ui/ThemedView";
-import { getPostDetail } from "@/service/post";
+import { createComment, getCommentList, getPostDetail } from "@/service/post";
 import { PostType, User } from "@/types";
 import { getImageSize, omit, timestampToTime, vw } from "@/utils";
 import { useLocalSearchParams, useSearchParams } from "expo-router/build/hooks";
-import { useEffect, useMemo, useState } from "react";
-import { Image, StyleSheet, Text, View } from "react-native";
-import { SafeAreaView } from "react-native-safe-area-context";
+import { useEffect, useMemo, useRef, useState } from "react";
+import {
+  Button,
+  FlatList,
+  Image,
+  Keyboard,
+  Pressable,
+  StyleSheet,
+  Text,
+  TextInput,
+  TouchableNativeFeedback,
+  View,
+} from "react-native";
 import PagerView from "react-native-pager-view";
 import { AntDesign } from "@expo/vector-icons";
 import { useRouter } from "expo-router";
+import { CommentType } from "@/types/home";
+import { CommentEditor } from "./../../components/ui/CommentEditor";
+import { useCommentStore, useUser } from "@/store";
+import { BaseComment } from "@/components/ui/BaseComment";
+import { commentAdapter, replyAdapter } from "@/store/post";
 
 type PostPageParams = {
   postId: string;
 };
 export default function PostPage() {
   const params = useLocalSearchParams<PostPageParams>();
+  const userStore = useUser();
+  const commentStore = useCommentStore();
   const [post, setPost] = useState<PostType | null>(null);
   const [author, setAuthor] = useState<User | null>(null);
   const router = useRouter();
   const [imageHeight, setImageHeight] = useState(0);
+  const [show, setShow] = useState(false);
+
   const imageSizeList = useMemo(() => {
     return post?.media.map((media) => {
       return getImageSize(media.media_url);
     });
   }, [post?.media]);
+
+  const sendComment = async (content: string) => {
+    try {
+      const comment = {
+        comment_text: content,
+        post_id: params.postId,
+        parent_comment_id: commentStore.parentComment?.commentId,
+        target_comment_id: commentStore.targetComment?.commentId,
+        user_id: userStore.user!.user_id,
+      };
+      const res = await createComment(comment);
+      if (res.data.parent_comment_id) {
+        const cmt = {
+          ...res.data,
+          user: userStore.user!,
+          target: commentStore.targetComment,
+        };
+        commentStore.addReply(res.data.parent_comment_id, replyAdapter(cmt));
+      } else {
+        const cmt = {
+          ...res.data,
+          user: userStore.user!,
+        };
+        commentStore.addComment(commentAdapter(cmt));
+      }
+      setShow(false);
+      commentStore.setParentComment(null);
+      commentStore.setTargetComment(null);
+    } catch (error) {}
+  };
 
   useEffect(() => {
     if (imageSizeList) {
@@ -47,51 +96,93 @@ export default function PostPage() {
     } else {
       getPostDetail(params.postId)
         .then((res) => {
-          console.log(res);
           setPost(omit(res, ["author"]) as PostType);
           setAuthor(res.author);
         })
         .catch((err) => {
           console.log(err);
         });
+
+      getCommentList(params.postId).then((res) => {
+        commentStore.addComment(res.data.map(commentAdapter));
+      });
     }
+
+    return () => {
+      commentStore.reset();
+    };
   }, []);
   return (
-    <ThemedSafeAreaView style={styles.container}>
-      {author ? (
-        <ThemedView style={styles.top}>
-          <AntDesign name="left" size={24} color="gray" onPress={router.back} />
-          <Image source={{ uri: author.avatar }} style={styles.avatar} />
-          <Text>{author.username}</Text>
-        </ThemedView>
-      ) : null}
-      {post ? (
-        <ThemedView>
-          <PagerView
-            initialPage={0}
-            style={{
-              height: imageHeight,
+    <>
+      <ThemedSafeAreaView style={styles.container}>
+        {author ? (
+          <ThemedView style={styles.top}>
+            <AntDesign
+              name="left"
+              size={24}
+              color="gray"
+              onPress={router.back}
+            />
+            <Image source={{ uri: author.avatar }} style={styles.avatar} />
+            <Text>{author.username}</Text>
+          </ThemedView>
+        ) : null}
+        {post ? (
+          <ThemedView>
+            <PagerView
+              initialPage={0}
+              style={{
+                height: imageHeight,
+              }}
+            >
+              {post.media.map((media) => (
+                <Image
+                  key={media.media_url}
+                  source={{ uri: media.media_url }}
+                  style={styles.image}
+                />
+              ))}
+            </PagerView>
+            <View style={[styles.pd8]}>
+              <ThemedText style={styles.title}>{post.title}</ThemedText>
+              <ThemedText style={styles.content}>{post.content}</ThemedText>
+              <ThemedText style={styles.time}>
+                {timestampToTime(post.created_at)}
+              </ThemedText>
+            </View>
+          </ThemedView>
+        ) : null}
+        <View style={styles.line}></View>
+        <FlatList
+          data={commentStore.comments}
+          keyExtractor={(item) => item.commentId.toFixed()}
+          renderItem={({ item }) => (
+            <BaseComment
+              key={item.commentId}
+              comment={item}
+              user={item.user}
+              onReply={() => setShow(true)}
+            />
+          )}
+        />
+        <View style={styles.bottomBar}>
+          <Pressable
+            onPress={() => {
+              setShow(true);
             }}
           >
-            {post.media.map((media) => (
-              <Image
-                key={media.media_url}
-                source={{ uri: media.media_url }}
-                style={styles.image}
-              />
-            ))}
-          </PagerView>
-          <View style={[styles.pd8]}>
-            <ThemedText style={styles.title}>{post.title}</ThemedText>
-            <ThemedText style={styles.content}>{post.content}</ThemedText>
-            <ThemedText style={styles.time}>
-              {timestampToTime(post.created_at)}
-            </ThemedText>
-          </View>
-        </ThemedView>
-      ) : null}
-      <View style={styles.line}></View>
-    </ThemedSafeAreaView>
+            <View style={styles.commentBar}>
+              <Text>评论</Text>
+            </View>
+          </Pressable>
+        </View>
+      </ThemedSafeAreaView>
+      <CommentEditor
+        show={show}
+        onCancel={() => setShow(false)}
+        onSend={sendComment}
+      />
+    </>
   );
 }
 
@@ -112,8 +203,8 @@ const styles = StyleSheet.create({
     marginHorizontal: vw(8),
   },
   image: {
-    width: "100%",
-    height: vw(320),
+    flex: 1,
+    resizeMode: "contain",
   },
   title: {
     fontSize: vw(18),
@@ -132,5 +223,21 @@ const styles = StyleSheet.create({
     borderBottomWidth: 0.5,
     borderBottomColor: "#ececec",
     margin: vw(8),
+  },
+  bottomBar: {
+    flexDirection: "row",
+    alignItems: "center",
+    paddingVertical: vw(8),
+    paddingHorizontal: vw(8),
+  },
+  commentBar: {
+    flexDirection: "row",
+    alignItems: "center",
+    paddingVertical: vw(8),
+    paddingHorizontal: vw(12),
+    width: vw(270),
+    height: vw(36),
+    borderRadius: vw(18),
+    backgroundColor: "#ececec",
   },
 });

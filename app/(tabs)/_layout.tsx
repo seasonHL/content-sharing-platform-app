@@ -6,7 +6,7 @@ import React, {
   useMemo,
   useState,
 } from "react";
-import { Platform, ToastAndroid, View, Text } from "react-native";
+import { StyleSheet, ToastAndroid, View, Text } from "react-native";
 
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import HomeScreen from ".";
@@ -17,6 +17,7 @@ import { Drawer } from "react-native-drawer-layout";
 import DrawerContent from "@/components/home/DrawerContent";
 import MessageScreen from "./message";
 import { useToken } from "@/store";
+import { vw } from "@/utils";
 
 const Tab = createBottomTabNavigator();
 
@@ -32,6 +33,7 @@ export default function TabLayout() {
   const router = useRouter();
   const [open, setOpen] = useState(false);
   const tokenStore = useToken();
+  const [mounted, setMounted] = useState(false);
 
   const screens = useMemo(
     () => ({
@@ -45,11 +47,16 @@ export default function TabLayout() {
   );
 
   useEffect(() => {
-    if (tokenStore.token === null) {
+    if (!mounted) return;
+    if (tokenStore.access_token === null) {
       ToastAndroid.show("请先登录", 3);
       router.navigate("/auth");
     }
-  }, [tokenStore.token]);
+  }, [tokenStore.access_token, mounted]);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
   return (
     <DrawerContext.Provider value={{ setOpen }}>
       <Drawer
@@ -57,6 +64,7 @@ export default function TabLayout() {
         onOpen={() => setOpen(true)}
         onClose={() => setOpen(false)}
         renderDrawerContent={() => <DrawerContent />}
+        drawerStyle={styles.drawer}
       >
         <Tab.Navigator
           screenOptions={{
@@ -105,3 +113,9 @@ export default function TabLayout() {
     </DrawerContext.Provider>
   );
 }
+
+const styles = StyleSheet.create({
+  drawer: {
+    width: vw(280),
+  },
+});

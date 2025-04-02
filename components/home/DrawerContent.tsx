@@ -1,7 +1,13 @@
 import { vw } from "@/utils";
-import { Ionicons } from "@expo/vector-icons";
+import { Feather, Ionicons } from "@expo/vector-icons";
 import { useRouter } from "expo-router";
-import { StatusBar, StyleSheet, Text, View } from "react-native";
+import {
+  StatusBar,
+  StyleSheet,
+  Text,
+  TouchableNativeFeedback,
+  View,
+} from "react-native";
 
 const DrawerContent = () => {
   const router = useRouter();
@@ -10,7 +16,12 @@ const DrawerContent = () => {
     <>
       <View style={styles.container}>
         <View style={styles.flex}>
-          <Text>Drawer content!</Text>
+          <TouchableNativeFeedback onPress={() => router.navigate("/cart")}>
+            <View style={styles.listItem}>
+              <Feather name="shopping-cart" size={24} color="black" />
+              <Text>购物车</Text>
+            </View>
+          </TouchableNativeFeedback>
         </View>
         <View style={styles.bottomBar}>
           <Ionicons
@@ -42,6 +53,13 @@ const styles = StyleSheet.create({
   bottomBar: {
     flexDirection: "row",
     justifyContent: "space-between",
+    paddingHorizontal: vw(16),
+    paddingVertical: vw(8),
+  },
+  listItem: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: vw(8),
     paddingHorizontal: vw(16),
     paddingVertical: vw(8),
   },

@@ -6,19 +6,32 @@ import {
   StyleSheet,
   ImageBackground,
 } from "react-native";
-import { useRouter } from "expo-router";
+import { useFocusEffect, useRouter } from "expo-router";
 import { useUser } from "@/store";
 import { vw } from "@/utils";
 import { LinearGradient } from "expo-linear-gradient";
 import { Ionicons } from "@expo/vector-icons";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { DrawerContext } from "./_layout";
-import { useContext } from "react";
+import { useCallback, useContext, useState } from "react";
+import { getPostList } from "@/service/home";
+import WaterFallList from "@/components/ui/WaterFallList";
+import PostCard from "@/components/home/PostCard";
+import { PostType } from "@/types";
 
 export default function ProfileScreen() {
-  const router = useRouter();
   const userStore = useUser();
   const drawerCtx = useContext(DrawerContext);
+  const [postList, setPostList] = useState<PostType[]>([]);
+
+  useFocusEffect(
+    useCallback(() => {
+      if (!userStore.user) return;
+      getPostList({ user_id: userStore.user.user_id }).then((res) => {
+        setPostList(res);
+      });
+    }, [userStore.user])
+  );
 
   return (
     <>
@@ -52,6 +65,16 @@ export default function ProfileScreen() {
           </SafeAreaView>
         </LinearGradient>
       </ImageBackground>
+
+      <View style={styles.postList}>
+        <WaterFallList
+          data={postList}
+          renderItem={({ item }) => <PostCard post={item} />}
+          keyExtractor={(item) => item.post_id.toFixed()}
+          numColumns={2}
+          showsVerticalScrollIndicator={false}
+        />
+      </View>
     </>
   );
 }
@@ -86,5 +109,8 @@ const styles = StyleSheet.create({
   },
   white: {
     color: "white",
+  },
+  postList: {
+    paddingTop: vw(20),
   },
 });

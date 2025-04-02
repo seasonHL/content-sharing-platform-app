@@ -44,7 +44,7 @@ export default function App() {
   const takePicture = async () => {
     const photo = await ref.current?.takePictureAsync();
     if (!photo) return;
-    const fileUri = FileSystem.documentDirectory + "photo.jpg";
+    const fileUri = FileSystem.documentDirectory + `photo-${Date.now()}.jpg`;
     await FileSystem.copyAsync({ from: photo.uri, to: fileUri });
     setUri(fileUri);
   };
@@ -71,20 +71,22 @@ export default function App() {
   const renderPicture = () => {
     return (
       <View>
-        <Image source={{ uri }} style={{ width: vw(414), flex: 1 }} />
-        <SafeAreaView style={{ position: "absolute" }}>
-          <Button onPress={() => setUri(undefined)} title="重拍" />
-          <Button
-            onPress={() =>
-              router.push({
-                pathname: "/edit",
-                params: {
-                  uri,
-                },
-              })
-            }
-            title="去编辑"
-          />
+        <Image source={{ uri }} style={styles.picture} />
+        <SafeAreaView style={styles.pictureOperation}>
+          <View style={[styles.bottomBar]}>
+            <Button onPress={() => setUri(undefined)} title="重拍" />
+            <Button
+              onPress={() =>
+                router.push({
+                  pathname: "/edit",
+                  params: {
+                    uri,
+                  },
+                })
+              }
+              title="去编辑"
+            />
+          </View>
         </SafeAreaView>
       </View>
     );
@@ -179,5 +181,24 @@ const styles = StyleSheet.create({
     width: 70,
     height: 70,
     borderRadius: 50,
+  },
+  pictureOperation: {
+    position: "absolute",
+    width: vw(414),
+    height: "100%",
+  },
+  picture: {
+    width: vw(414),
+    flex: 1,
+  },
+  bottomBar: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    marginTop: "auto",
+    paddingVertical: vw(20),
+    paddingHorizontal: vw(20),
+  },
+  mtAuto: {
+    marginTop: "auto",
   },
 });
