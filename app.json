@@ -16,7 +16,6 @@
         "foregroundImage": "./assets/images/logo.png",
         "backgroundColor": "#ffffff"
       },
-      "usesCleartextTraffic": true,
       "package": "com.seasonhl.contentsharingplatformapp"
     },
     "web": {
