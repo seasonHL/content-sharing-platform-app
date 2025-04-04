@@ -7,20 +7,11 @@ import HomePageHeader from "@/components/home/Header";
 import { SafeAreaView } from "react-native-safe-area-context";
 import WaterFallList from "@/components/ui/WaterFallList";
 import { useFocusEffect } from "expo-router";
+import useRequest from "@/hooks/useRequest";
 
 export default function HomeScreen() {
   const [postList, setPostList] = useState<PostType[]>([]);
-
-  useFocusEffect(
-    useCallback(() => {
-      getPostList().then((res) => {
-        if (!res) {
-          return;
-        }
-        setPostList(res);
-      });
-    }, [])
-  );
+  useRequest(getPostList, { onSuccess: setPostList });
 
   return (
     <>

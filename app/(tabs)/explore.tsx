@@ -9,21 +9,16 @@ import WaterFallList from "@/components/ui/WaterFallList";
 import ProductCard from "@/components/shop/ProductCard";
 import { vw } from "@/utils";
 import { AntDesign, Feather } from "@expo/vector-icons";
+import useRequest from "@/hooks/useRequest";
 
 export default function ExploreScreen() {
   const [productList, setProductList] = useState<ProductType[]>([]);
   const router = useRouter();
 
-  useFocusEffect(
-    useCallback(() => {
-      getProductList().then((res) => {
-        if (!res.data) {
-          return;
-        }
-        setProductList(res.data);
-      });
-    }, [])
-  );
+  useRequest(getProductList, {
+    onSuccess: (res) => setProductList(res.data),
+  });
+
   return (
     <>
       <ThemedSafeAreaView style={styles.header}>

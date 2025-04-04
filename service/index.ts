@@ -60,16 +60,22 @@ service.interceptors.response.use(
         }
 
         if (error.status === 401) {
-            if (isRefreshing) {
-                refreshQueue.push(() => {
-                    service(error.config)
-                })
-            } else {
-                isRefreshing = true
-                refreshToken().then(() => {
-                    service(error.config)
-                })
-            }
+            return new Promise((resolve, reject) => {
+                if (isRefreshing) {
+                    refreshQueue.push(() => {
+                        service(error.config)
+                            .then(res => { resolve(res) })
+                            .catch(err => { reject(err) })
+                    })
+                } else {
+                    isRefreshing = true
+                    refreshToken().then(() => {
+                        service(error.config)
+                            .then(res => { resolve(res) })
+                            .catch(err => { reject(err) })
+                    })
+                }
+            })
         }
         return Promise.reject(error)
     }

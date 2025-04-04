@@ -12,6 +12,7 @@ import {
   Image,
   Keyboard,
   Pressable,
+  SectionList,
   StyleSheet,
   Text,
   TextInput,
@@ -127,34 +128,8 @@ export default function PostPage() {
             <Text>{author.username}</Text>
           </ThemedView>
         ) : null}
-        {post ? (
-          <ThemedView>
-            <PagerView
-              initialPage={0}
-              style={{
-                height: imageHeight,
-              }}
-            >
-              {post.media.map((media) => (
-                <Image
-                  key={media.media_url}
-                  source={{ uri: media.media_url }}
-                  style={styles.image}
-                />
-              ))}
-            </PagerView>
-            <View style={[styles.pd8]}>
-              <ThemedText style={styles.title}>{post.title}</ThemedText>
-              <ThemedText style={styles.content}>{post.content}</ThemedText>
-              <ThemedText style={styles.time}>
-                {timestampToTime(post.created_at)}
-              </ThemedText>
-            </View>
-          </ThemedView>
-        ) : null}
-        <View style={styles.line}></View>
-        <FlatList
-          data={commentStore.comments}
+        <SectionList
+          sections={[{ data: commentStore.comments, post }]}
           keyExtractor={(item) => item.commentId.toFixed()}
           renderItem={({ item }) => (
             <BaseComment
@@ -164,6 +139,38 @@ export default function PostPage() {
               onReply={() => setShow(true)}
             />
           )}
+          renderSectionHeader={({ section: { post } }) =>
+            post ? (
+              <>
+                <ThemedView>
+                  <PagerView
+                    initialPage={0}
+                    style={{
+                      height: imageHeight,
+                    }}
+                  >
+                    {post.media.map((media) => (
+                      <Image
+                        key={media.media_url}
+                        source={{ uri: media.media_url }}
+                        style={styles.image}
+                      />
+                    ))}
+                  </PagerView>
+                  <View style={[styles.pd8]}>
+                    <ThemedText style={styles.title}>{post.title}</ThemedText>
+                    <ThemedText style={styles.content}>
+                      {post.content}
+                    </ThemedText>
+                    <ThemedText style={styles.time}>
+                      {timestampToTime(post.created_at)}
+                    </ThemedText>
+                  </View>
+                </ThemedView>
+                <View style={styles.line}></View>
+              </>
+            ) : null
+          }
         />
         <View style={styles.bottomBar}>
           <Pressable
@@ -175,6 +182,8 @@ export default function PostPage() {
               <Text>评论</Text>
             </View>
           </Pressable>
+          <AntDesign name="heart" size={24} color="red" />
+          <AntDesign name="hearto" size={24} color="black" />
         </View>
       </ThemedSafeAreaView>
       <CommentEditor
