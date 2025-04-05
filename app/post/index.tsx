@@ -156,7 +156,8 @@ export default function PostPage() {
               onPress={router.back}
             />
             <Image source={{ uri: author.avatar }} style={styles.avatar} />
-            <Text>{author.username}</Text>
+            <Text style={styles.userName}>{author.username}</Text>
+            <AntDesign name="sharealt" size={24} color="gray" />
           </ThemedView>
         ) : null}
         <SectionList
@@ -213,20 +214,32 @@ export default function PostPage() {
               <Text>评论</Text>
             </View>
           </Pressable>
-          <Toggle
-            isToggle={post?.isLiked}
-            defaultComponent={
-              <Pressable onPress={handleLike}>
-                <AntDesign name="hearto" size={24} color="black" />
-              </Pressable>
-            }
-            toggleComponent={
-              <Pressable onPress={handleUnLike}>
-                <AntDesign name="heart" size={24} color="red" />
-              </Pressable>
-            }
-          />
-          <Text>{post?.likeCount}</Text>
+          <View style={styles.bottomItem}>
+            <Toggle
+              isToggle={post?.isLiked}
+              defaultComponent={
+                <Pressable onPress={handleLike}>
+                  <AntDesign name="hearto" size={24} color="black" />
+                </Pressable>
+              }
+              toggleComponent={
+                <Pressable onPress={handleUnLike}>
+                  <AntDesign name="heart" size={24} color="red" />
+                </Pressable>
+              }
+            />
+            <Text>{post?.likeCount}</Text>
+          </View>
+          <Pressable
+            onPress={() => {
+              setShow(true);
+            }}
+          >
+            <View style={styles.bottomItem}>
+              <AntDesign name="message1" size={24} color="black" />
+              <Text>{post?.commentCount}</Text>
+            </View>
+          </Pressable>
         </View>
       </ThemedSafeAreaView>
       <CommentEditor
@@ -254,6 +267,9 @@ const styles = StyleSheet.create({
     borderRadius: vw(24),
     marginHorizontal: vw(8),
   },
+  userName: {
+    flexGrow: 1,
+  },
   image: {
     flex: 1,
     resizeMode: "contain",
@@ -279,8 +295,14 @@ const styles = StyleSheet.create({
   bottomBar: {
     flexDirection: "row",
     alignItems: "center",
+    gap: vw(8),
     paddingVertical: vw(8),
     paddingHorizontal: vw(8),
+  },
+  bottomItem: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: vw(4),
   },
   commentBar: {
     flexDirection: "row",
