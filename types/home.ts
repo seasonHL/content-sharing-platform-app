@@ -13,6 +13,9 @@ export interface PostType {
     updated_at: string
     is_published: boolean
     media: MediaType[]
+    isLiked: boolean
+    likeCount: number
+    commentCount: number
 }
 
 export interface CommentType {

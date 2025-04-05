@@ -43,3 +43,13 @@ export const createPost = async (data: ICreatePost) => {
     const res = await service.post(`/post/create`, data)
     return res.data
 }
+
+export const likePost = async (postId: number) => {
+    const res = await service.post(`/post/like`, { postId })
+    return res.data
+}
+
+export const unlikePost = async (postId: number) => {
+    const res = await service.post(`/post/unlike`, { postId })
+    return res.data
+}

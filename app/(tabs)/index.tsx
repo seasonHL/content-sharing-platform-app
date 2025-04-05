@@ -1,4 +1,4 @@
-import { StyleSheet, FlatList, View } from "react-native";
+import { StyleSheet, FlatList, View, RefreshControl } from "react-native";
 import { useCallback, useEffect, useState } from "react";
 import { getPostList } from "@/service/home";
 import { PostType } from "@/types";
@@ -11,12 +11,18 @@ import useRequest from "@/hooks/useRequest";
 
 export default function HomeScreen() {
   const [postList, setPostList] = useState<PostType[]>([]);
-  useRequest(getPostList, { onSuccess: setPostList });
+  const rPost = useRequest(getPostList, { onSuccess: setPostList });
 
   return (
     <>
       <HomePageHeader />
       <WaterFallList
+        refreshControl={
+          <RefreshControl
+            refreshing={rPost.loading}
+            onRefresh={rPost.refetch}
+          />
+        }
         data={postList}
         renderItem={({ item }) => <PostCard post={item} />}
         keyExtractor={(item) => item.post_id.toFixed()}

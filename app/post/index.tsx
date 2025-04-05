@@ -1,7 +1,13 @@
 import { ThemedSafeAreaView } from "@/components/ui/ThemedSafeAreaView";
 import { ThemedText } from "@/components/ui/ThemedText";
 import { ThemedView } from "@/components/ui/ThemedView";
-import { createComment, getCommentList, getPostDetail } from "@/service/post";
+import {
+  createComment,
+  getCommentList,
+  getPostDetail,
+  likePost,
+  unlikePost,
+} from "@/service/post";
 import { PostType, User } from "@/types";
 import { getImageSize, omit, timestampToTime, vw } from "@/utils";
 import { useLocalSearchParams, useSearchParams } from "expo-router/build/hooks";
@@ -27,6 +33,7 @@ import { CommentEditor } from "./../../components/ui/CommentEditor";
 import { useCommentStore, useUser } from "@/store";
 import { BaseComment } from "@/components/ui/BaseComment";
 import { commentAdapter, replyAdapter } from "@/store/post";
+import { Toggle } from "@/components/ui/Toggle";
 
 type PostPageParams = {
   postId: string;
@@ -46,6 +53,30 @@ export default function PostPage() {
       return getImageSize(media.media_url);
     });
   }, [post?.media]);
+
+  const handleLike = async () => {
+    if (!post) return;
+    try {
+      const res = await likePost(post.post_id);
+      setPost({
+        ...post,
+        isLiked: res.data.isLiked,
+        likeCount: res.data.likeCount,
+      });
+    } catch (error) {}
+  };
+
+  const handleUnLike = async () => {
+    if (!post) return;
+    try {
+      const res = await unlikePost(post.post_id);
+      setPost({
+        ...post,
+        isLiked: res.data.isLiked,
+        likeCount: res.data.likeCount,
+      });
+    } catch (error) {}
+  };
 
   const sendComment = async (content: string) => {
     try {
@@ -182,8 +213,20 @@ export default function PostPage() {
               <Text>评论</Text>
             </View>
           </Pressable>
-          <AntDesign name="heart" size={24} color="red" />
-          <AntDesign name="hearto" size={24} color="black" />
+          <Toggle
+            isToggle={post?.isLiked}
+            defaultComponent={
+              <Pressable onPress={handleLike}>
+                <AntDesign name="hearto" size={24} color="black" />
+              </Pressable>
+            }
+            toggleComponent={
+              <Pressable onPress={handleUnLike}>
+                <AntDesign name="heart" size={24} color="red" />
+              </Pressable>
+            }
+          />
+          <Text>{post?.likeCount}</Text>
         </View>
       </ThemedSafeAreaView>
       <CommentEditor

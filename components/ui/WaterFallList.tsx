@@ -18,6 +18,7 @@ const WaterFallList = (props: Props) => {
 
   return (
     <FlatList
+      refreshControl={rest.refreshControl}
       data={columnList}
       numColumns={numColumns}
       showsVerticalScrollIndicator={false}
