@@ -53,3 +53,8 @@ export const unlikePost = async (postId: number) => {
     const res = await service.post(`/post/unlike`, { postId })
     return res.data
 }
+
+export const share = async (postId: number, to: number) => {
+    const res = await service.post(`/post/share`, { post_id: postId, receiver_id: to })
+    return res.data
+}

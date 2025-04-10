@@ -1,3 +1,4 @@
+import PostCard from "@/components/home/PostCard";
 import { useSocket } from "@/hooks/useSocket";
 import { getConversationDetail } from "@/service/message";
 import { useUser } from "@/store";
@@ -56,8 +57,8 @@ export default function ChatPage() {
 
   useEffect(() => {
     getConversationDetail(Number(params.conversationId)).then((res) => {
-      setConversationDetail(res);
-      setMessageList(res.messages);
+      setConversationDetail(res.data);
+      setMessageList(res.data.messages);
     });
   }, []);
   return (
@@ -84,12 +85,15 @@ export default function ChatPage() {
                       : conversationDetail.avatar,
                   }}
                 />
-
-                <Text
-                  style={[styles.msg, isMe ? styles.myMsg : styles.otherMsg]}
-                >
-                  {item.content}
-                </Text>
+                {item.post ? (
+                  <PostCard post={item.post} />
+                ) : (
+                  <Text
+                    style={[styles.msg, isMe ? styles.myMsg : styles.otherMsg]}
+                  >
+                    {item.content}
+                  </Text>
+                )}
               </View>
             );
           }}

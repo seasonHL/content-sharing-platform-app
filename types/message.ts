@@ -1,3 +1,5 @@
+import { PostType } from "./home"
+
 export interface ConversationType {
     conversation_id: number
     user_id: number
@@ -7,6 +9,7 @@ export interface ConversationType {
     last_message: string
     unread: number
     friend_id: number
+    messages: MessageType[]
 }
 
 /** 消息实体类 */
@@ -26,4 +29,6 @@ export interface MessageType {
     isRead: boolean;
     /** 关联的用户 ID */
     // user_id: number;
+    post_id?: number;
+    post?: PostType
 }
