@@ -1,0 +1,2 @@
+export const D_BACKGROUND = 'https://act-webstatic.mihoyo.com/event-static/2023/08/15/55ccd259cca4f64ae81f2d113a153bae_4886659032180241796.png?x-oss-process=image/quality,Q_80/resize,m_lfit,s_500'
+export const D_BIO = '这个人很懒，暂时没有简介~'

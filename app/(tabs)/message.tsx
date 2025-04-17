@@ -23,7 +23,9 @@ const MessageScreen = () => {
   const router = useRouter();
   const userStore = useUser();
   // 会话列表
-  const [conversations, setConversations] = useState<ConversationType[]>([]);
+  const [conversations, setConversations] = useState<
+    Omit<ConversationType, "messages">[]
+  >([]);
 
   const socket = useSocket(
     useMemo(

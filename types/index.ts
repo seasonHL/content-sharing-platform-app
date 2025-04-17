@@ -30,6 +30,10 @@ export interface User {
     gender: EGender;
     /** 生日，存储用户的出生日期 */
     birthdate: Date;
+    /** 关注数，默认为0 */
+    followings: number;
+    /** 粉丝数，默认为0 */
+    followers: number;
 }
 
 export interface IData<T = unknown> {
