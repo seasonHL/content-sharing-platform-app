@@ -1,4 +1,4 @@
-import { PostType } from "@/types"
+import { IResult, PostType } from "@/types"
 import { service } from "."
 
 interface IParams {
@@ -6,7 +6,7 @@ interface IParams {
     pageSize?: number
     user_id?: number
 }
-export const getPostList = async (params?: IParams): Promise<PostType[]> => {
+export const getPostList = async (params?: IParams): IResult<PostType[]> => {
     const res = await service.get('/post/list', {
         params
     })

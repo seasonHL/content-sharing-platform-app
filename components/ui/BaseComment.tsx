@@ -13,13 +13,12 @@ import { Show } from "./Show";
 import { useCommentStore } from "@/store";
 import { commentAdapter, replyAdapter, TCommentState } from "@/store/post";
 import { getReplyList } from "@/service/post";
+import Avatar from "./Avatar";
+import { User } from "@/types";
 
 interface BaseCommentProps {
   comment: TCommentState;
-  user: {
-    username: string;
-    avatar: string;
-  };
+  user: Partial<User> & Required<Pick<User, "user_id" | "avatar">>;
   onReply?: () => void;
 }
 
@@ -41,7 +40,7 @@ export const BaseComment = ({ comment, user, onReply }: BaseCommentProps) => {
 
   return (
     <View style={styles.container}>
-      <Image source={{ uri: user.avatar }} style={styles.avatar} />
+      <Avatar user={user} size={48} />
       <View style={styles.ml10}>
         <Text style={{ fontWeight: "bold" }}>{user.username}</Text>
         <Text>{comment.content}</Text>
@@ -101,7 +100,7 @@ export const SubComment = ({
   const commentStore = useCommentStore();
   return (
     <View style={styles.container}>
-      <Image source={{ uri: user.avatar }} style={styles.replyAvatar} />
+      <Avatar user={user} size={32} />
       <View style={styles.ml10}>
         <Text style={{ fontWeight: "bold" }}>
           {user.username}

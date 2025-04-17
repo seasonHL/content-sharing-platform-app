@@ -6,32 +6,35 @@ import {
   StyleSheet,
   ImageBackground,
 } from "react-native";
-import { useFocusEffect, useRouter } from "expo-router";
-import { useUser } from "@/store";
 import { vw } from "@/utils";
 import { LinearGradient } from "expo-linear-gradient";
-import { Ionicons } from "@expo/vector-icons";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { DrawerContext } from "./_layout";
-import { useCallback, useContext, useState } from "react";
+import { useEffect, useState } from "react";
 import { getPostList } from "@/service/home";
 import WaterFallList from "@/components/ui/WaterFallList";
 import PostCard from "@/components/home/PostCard";
-import { PostType } from "@/types";
+import { PostType, User } from "@/types";
+import { useLocalSearchParams } from "expo-router";
+import { findUserById } from "@/service/user";
 
 export default function ProfileScreen() {
-  const userStore = useUser();
-  const drawerCtx = useContext(DrawerContext);
+  const { id: userId } = useLocalSearchParams();
   const [postList, setPostList] = useState<PostType[]>([]);
+  const [userInfo, setUserInfo] = useState<User>();
 
-  useFocusEffect(
-    useCallback(() => {
-      if (!userStore.user) return;
-      getPostList({ user_id: userStore.user.user_id }).then((res) => {
-        setPostList(res.data);
-      });
-    }, [userStore.user])
-  );
+  const mounted = async () => {
+    if (!userId) return;
+    const [{ data: list }, { data: user }] = await Promise.all([
+      getPostList({ user_id: Number(userId) }),
+      findUserById(Number(userId)),
+    ]);
+    setPostList(list);
+    setUserInfo(user);
+  };
+
+  useEffect(() => {
+    mounted();
+  }, []);
 
   return (
     <>
@@ -43,22 +46,15 @@ export default function ProfileScreen() {
       >
         <LinearGradient colors={["rgba(0,0,0,0)", "rgba(0,0,0,0.8)"]}>
           <SafeAreaView style={styles.container}>
-            <View style={styles.topBar}>
-              <Ionicons
-                name="menu"
-                size={24}
-                color="white"
-                onPress={() => drawerCtx.setOpen(true)}
-              />
-            </View>
+            <View style={styles.topBar}></View>
             <View style={styles.baseInfo}>
               <Image
                 source={{
-                  uri: userStore.user?.avatar,
+                  uri: userInfo?.avatar,
                 }}
                 style={styles.avatar}
               />
-              <Text style={styles.username}>{userStore.user?.username}</Text>
+              <Text style={styles.username}>{userInfo?.username}</Text>
             </View>
             <Text style={styles.white}>这个人很懒，暂时没有简介~</Text>
             <View></View>
@@ -120,7 +116,5 @@ const styles = StyleSheet.create({
     alignItems: "center",
     paddingHorizontal: vw(20),
   },
-  postList: {
-    // paddingTop: vw(20),
-  },
+  postList: {},
 });

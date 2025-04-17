@@ -11,7 +11,9 @@ import useRequest from "@/hooks/useRequest";
 
 export default function HomeScreen() {
   const [postList, setPostList] = useState<PostType[]>([]);
-  const rPost = useRequest(getPostList, { onSuccess: setPostList });
+  const rPost = useRequest(getPostList, {
+    onSuccess: (res) => setPostList(res.data),
+  });
 
   return (
     <>

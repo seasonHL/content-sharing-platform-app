@@ -1,11 +1,12 @@
 import PostCard from "@/components/home/PostCard";
+import Avatar from "@/components/ui/Avatar";
 import { useSocket } from "@/hooks/useSocket";
 import { getConversationDetail } from "@/service/message";
 import { useUser } from "@/store";
 import { ConversationType, MessageType } from "@/types/message";
 import { vw } from "@/utils";
 import { Ionicons } from "@expo/vector-icons";
-import { useLocalSearchParams } from "expo-router";
+import { router, useLocalSearchParams } from "expo-router";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import {
   Text,
@@ -15,6 +16,7 @@ import {
   Button,
   FlatList,
   Image,
+  Pressable,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
@@ -77,13 +79,15 @@ export default function ChatPage() {
                   styles.alignCenter,
                 ]}
               >
-                <Image
-                  style={styles.avatar}
-                  source={{
-                    uri: isMe
-                      ? userStore.user?.avatar
-                      : conversationDetail.avatar,
-                  }}
+                <Avatar
+                  user={
+                    isMe
+                      ? userStore.user
+                      : {
+                          user_id: conversationDetail?.friend_id,
+                          avatar: conversationDetail.avatar,
+                        }
+                  }
                 />
                 {item.post ? (
                   <PostCard post={item.post} />

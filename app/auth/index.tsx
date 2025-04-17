@@ -47,7 +47,7 @@ export default function AuthPage() {
     try {
       const flag = await login(state);
       if (flag) {
-        router.navigate("/");
+        router.replace("/");
       } else {
         ToastAndroid.show("账号或密码错误", 3);
       }
