@@ -1,4 +1,4 @@
-import { Dimensions, PixelRatio, Image } from "react-native";
+import { Dimensions, PixelRatio, Image, StyleSheet, ImageStyle, TextStyle, ViewStyle } from "react-native";
 
 /**
  * 从对象中选择指定的键值对
@@ -37,6 +37,56 @@ export function vw(designSize: number) {
     const scale = screenWidth / DESIGN_WIDTH;
     return PixelRatio.roundToNearestPixel(designSize * scale);
 }
+
+
+type NamedStyles<T> = { [P in keyof T]: ViewStyle | TextStyle | ImageStyle };
+
+// 定义 options 参数的类型
+type CreateStyleOptions = {
+    exclude: string[];
+};
+
+const DEFAULT_OPTIONS: CreateStyleOptions = { exclude: ['borderRadius'] };
+
+// 提取样式转换逻辑到单独的函数
+function transformStyleValue(style: any, options: CreateStyleOptions) {
+    const { exclude } = options;
+    for (const prop in style) {
+        if (exclude.includes(prop)) {
+            continue;
+        }
+        const value = style[prop];
+        if (typeof value === 'number') {
+            style[prop] = vw(value);
+        }
+        if (typeof value === 'string' && value.includes('vw')) {
+            style[prop] = vw(parseFloat(value.replace('vw', '')));
+        }
+    }
+    return style;
+}
+
+export const createStyle = <T extends NamedStyles<T> | NamedStyles<any>>(styles: T & NamedStyles<any>, options: CreateStyleOptions = DEFAULT_OPTIONS): T => {
+    // 验证传入的 styles 参数是否为对象
+    if (typeof styles !== 'object' || styles === null) {
+        throw new Error('The "styles" parameter must be an object.');
+    }
+    // 验证传入的 options 参数是否为对象
+    if (typeof options !== 'object' || options === null) {
+        throw new Error('The "options" parameter must be an object.');
+    }
+    // 验证 options 中的 exclude 参数是否为数组
+    if (!Array.isArray(options.exclude)) {
+        throw new Error('The "exclude" property in "options" must be an array.');
+    }
+
+    const transformedStyles = { ...styles } as T;
+    for (const key in transformedStyles) {
+        const style = transformedStyles[key] as any;
+        transformedStyles[key] = transformStyleValue(style, options);
+    }
+    return StyleSheet.create(transformedStyles);
+};
 
 /**
  * 时间戳转换
