@@ -4,7 +4,7 @@ import { service } from "."
 interface IParams {
     page?: number
     pageSize?: number
-    user_id?: number
+    authorId?: number
 }
 export const getPostList = async (params?: IParams): IResult<PostType[]> => {
     const res = await service.get('/post/list', {

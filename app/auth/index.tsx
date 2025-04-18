@@ -65,6 +65,7 @@ export default function AuthPage() {
           placeholder="密码"
           value={state.password}
           onChangeText={(value) => dispatch({ type: "password", value })}
+          secureTextEntry
         />
         <Button title="登录" onPress={handleLogin} />
       </View>

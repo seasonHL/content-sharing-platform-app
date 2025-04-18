@@ -28,7 +28,7 @@ export const Profile: FC<ProfileProps> = ({ userId, left }) => {
 
   const refresh = async () => {
     const [{ data: list }, { data: user }] = await Promise.all([
-      getPostList({ user_id: userId }),
+      getPostList({ authorId: userId }),
       findUserById(userId),
     ]);
     setPostList(list);
