@@ -11,6 +11,7 @@ import {
 import { ThemedText } from "../ui/ThemedText";
 import { useRouter } from "expo-router";
 import { vw } from "@/utils";
+import Avatar from "../ui/Avatar";
 
 interface Props {
   post: PostType;
@@ -54,8 +55,14 @@ const PostCard: FC<Props> = ({ post, resizeMode }) => {
         />
         <ThemedView style={styles.content}>
           <ThemedText style={styles.title}>{postEntry.title}</ThemedText>
+        </ThemedView>
+        <ThemedView style={styles.user}>
+          <Avatar size={24} user={post.author} />
           <ThemedText style={styles.description}>
-            {postEntry.description}
+            {post.author?.username}
+          </ThemedText>
+          <ThemedText style={[styles.action, styles.description]}>
+            点赞{post.likeCount ?? 0}
           </ThemedText>
         </ThemedView>
       </ThemedView>
@@ -84,6 +91,15 @@ const styles = StyleSheet.create({
   description: {
     fontSize: vw(14),
     color: "gray",
+  },
+  user: {
+    flexDirection: "row",
+    alignItems: "center",
+    padding: vw(4),
+    gap: vw(4),
+  },
+  action: {
+    marginLeft: "auto",
   },
 });
 

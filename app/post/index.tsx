@@ -127,9 +127,9 @@ export default function PostPage() {
       // do something with post
     } else {
       getPostDetail(params.postId)
-        .then((res) => {
-          setPost(omit(res, ["author"]) as PostType);
-          setAuthor(res.author);
+        .then(({ data }) => {
+          setPost(omit(data, ["author"]) as PostType);
+          setAuthor(data.author);
         })
         .catch((err) => {
           console.log(err);

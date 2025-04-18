@@ -1,3 +1,5 @@
+import { User } from "."
+
 export interface MediaType {
     media_id: number
     media_url: string
@@ -16,6 +18,7 @@ export interface PostType {
     isLiked: boolean
     likeCount: number
     commentCount: number
+    author: User
 }
 
 export interface CommentType {
