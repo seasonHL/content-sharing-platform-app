@@ -25,7 +25,7 @@ interface ButtonProps {
   /** 是否禁用 */
   disabled?: boolean;
   /** 点击事件 */
-  onPress: () => void;
+  onPress?: () => void;
 }
 
 export const Button: React.FC<ButtonProps> = ({

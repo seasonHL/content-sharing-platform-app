@@ -58,3 +58,8 @@ export const share = async (postId: number, to: number) => {
     const res = await service.post(`/post/share`, { post_id: postId, receiver_id: to })
     return res.data
 }
+
+export const search = async (keyword: string) => {
+    const res = await service.get(`/post/search`, { params: { keyword } })
+    return res.data
+}

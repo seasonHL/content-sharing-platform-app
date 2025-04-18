@@ -23,9 +23,16 @@ interface Props {
   product: ProductLike;
   type?: "list" | "grid";
   withCheck?: boolean;
+  resizeMode?: "contain" | "cover" | "stretch" | "center";
   onPress?: () => void;
 }
-const ProductCard: FC<Props> = ({ product, type, withCheck, onPress }) => {
+const ProductCard: FC<Props> = ({
+  product,
+  type,
+  withCheck,
+  resizeMode,
+  onPress,
+}) => {
   const router = useRouter();
   const [aspectRatio, setAspectRatio] = useState(1);
 
@@ -72,7 +79,10 @@ const ProductCard: FC<Props> = ({ product, type, withCheck, onPress }) => {
       <ThemedView style={styles.card}>
         <Image
           source={{ uri: productEntry.cover }}
-          style={[styles.cover, { aspectRatio }]}
+          style={[
+            styles.cover,
+            resizeMode ? { resizeMode, height: vw(180) } : { aspectRatio },
+          ]}
           onLoad={onImageLoad}
         />
         <ThemedView style={styles.content}>

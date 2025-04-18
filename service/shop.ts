@@ -46,3 +46,10 @@ export const getCart = async () => {
 
     }
 }
+
+export const search = async (keyword: string) => {
+    const res = await service.get(`/product/search`, {
+        params: { keyword }
+    })
+    return res.data
+}

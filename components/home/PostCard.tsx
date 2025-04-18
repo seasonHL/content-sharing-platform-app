@@ -14,8 +14,9 @@ import { vw } from "@/utils";
 
 interface Props {
   post: PostType;
+  resizeMode?: "cover" | "contain" | "stretch" | "center";
 }
-const PostCard: FC<Props> = ({ post }) => {
+const PostCard: FC<Props> = ({ post, resizeMode }) => {
   const router = useRouter();
   const [aspectRatio, setAspectRatio] = useState(1);
 
@@ -45,7 +46,10 @@ const PostCard: FC<Props> = ({ post }) => {
       <ThemedView style={styles.card}>
         <Image
           source={{ uri: postEntry.cover }}
-          style={[styles.cover, { aspectRatio }]}
+          style={[
+            styles.cover,
+            resizeMode ? { resizeMode, height: vw(180) } : { aspectRatio },
+          ]}
           onLoad={onImageLoad}
         />
         <ThemedView style={styles.content}>
@@ -68,7 +72,7 @@ const styles = StyleSheet.create({
     overflow: "hidden",
   },
   cover: {
-    width: vw(206),
+    width: vw(204),
   },
   content: {
     padding: vw(4),

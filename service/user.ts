@@ -9,3 +9,10 @@ export const findUserById = async (id: number): IResult<User> => {
     })
     return res.data
 }
+
+export const search = async (keyword: string): IResult<User[]> => {
+    const res = await service.get(`/user/search`, {
+        params: { keyword }
+    })
+    return res.data
+}

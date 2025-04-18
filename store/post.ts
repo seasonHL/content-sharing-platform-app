@@ -45,9 +45,9 @@ export const useCommentStore = create<CommentStore & CommentActions>((set) => ({
     }),
     addReply: (commentId, reply) => set((state) => ({
         comments: state.comments.map((comment) => {
-            console.log(comment.commentId, reply, commentId)
+            // console.log(comment.commentId, reply, commentId)
             if (comment.commentId === commentId) {
-                console.log(comment, reply)
+                // console.log(comment, reply)
                 return { ...comment, replies: [...(comment.replies || [])].concat(reply) }
             } else {
                 return comment
