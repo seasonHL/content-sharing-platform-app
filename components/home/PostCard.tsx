@@ -1,5 +1,6 @@
 import { PostType } from "@/types";
 import { FC, memo, useMemo, useState } from "react";
+import { Text, View } from "react-native";
 import { ThemedView } from "../ui/ThemedView";
 import {
   Image,
@@ -12,6 +13,7 @@ import { ThemedText } from "../ui/ThemedText";
 import { useRouter } from "expo-router";
 import { vw } from "@/utils";
 import Avatar from "../ui/Avatar";
+import { AntDesign } from "@expo/vector-icons";
 
 interface Props {
   post: PostType;
@@ -61,9 +63,12 @@ const PostCard: FC<Props> = ({ post, resizeMode }) => {
           <ThemedText style={styles.description}>
             {post.author?.username}
           </ThemedText>
-          <ThemedText style={[styles.action, styles.description]}>
-            点赞{post.likeCount ?? 0}
-          </ThemedText>
+          <View style={styles.action}>
+            <AntDesign name="hearto" size={12} color="gray" />
+            <ThemedText style={[styles.description, styles.ml4]}>
+              <Text>{post.likeCount ?? 0}</Text>
+            </ThemedText>
+          </View>
         </ThemedView>
       </ThemedView>
     </TouchableOpacity>
@@ -100,6 +105,11 @@ const styles = StyleSheet.create({
   },
   action: {
     marginLeft: "auto",
+    flexDirection: "row",
+    alignItems: "center",
+  },
+  ml4: {
+    marginLeft: vw(4),
   },
 });
 

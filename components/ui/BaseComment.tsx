@@ -15,6 +15,7 @@ import { commentAdapter, replyAdapter, TCommentState } from "@/store/post";
 import { getReplyList } from "@/service/post";
 import Avatar from "./Avatar";
 import { User } from "@/types";
+import { AntDesign } from "@expo/vector-icons";
 
 interface BaseCommentProps {
   comment: TCommentState;
@@ -42,8 +43,8 @@ export const BaseComment = ({ comment, user, onReply }: BaseCommentProps) => {
     <View style={styles.container}>
       <Avatar user={user} size={48} />
       <View style={styles.ml10}>
-        <Text style={{ fontWeight: "bold" }}>{user.username}</Text>
-        <Text>{comment.content}</Text>
+        <Text style={styles.gray}>{user.username}</Text>
+        <Text style={styles.content}>{comment.content}</Text>
         <View style={{ flexDirection: "row" }}>
           <Text style={styles.gray}>{timestampToTime(comment.createdAt)}</Text>
           <Pressable
@@ -62,7 +63,7 @@ export const BaseComment = ({ comment, user, onReply }: BaseCommentProps) => {
           defaultComponent={
             <Show when={!replies.length && comment.replyCount}>
               <Pressable onPress={expand}>
-                <Text>展开</Text>
+                <Text style={styles.gray}>展开</Text>
               </Pressable>
             </Show>
           }
@@ -102,7 +103,7 @@ export const SubComment = ({
     <View style={styles.container}>
       <Avatar user={user} size={32} />
       <View style={styles.ml10}>
-        <Text style={{ fontWeight: "bold" }}>
+        <Text style={[styles.gray]}>
           {user.username}
           <Show
             when={
@@ -110,7 +111,8 @@ export const SubComment = ({
               parentComment.commentId != comment.target.commentId
             }
           >
-            <Text style={styles.gray}> 回复 </Text>
+            {/* <Text style={styles.gray}> 回复 </Text> */}{" "}
+            <AntDesign name="caretright" size={8} color="gray" />{" "}
             <Text>{comment.target?.user.username}</Text>
           </Show>
         </Text>
@@ -124,7 +126,7 @@ export const SubComment = ({
               onReply?.();
             }}
           >
-            <Text style={styles.gray}>回复</Text>
+            <Text style={[styles.gray, styles.ml10]}>回复</Text>
           </Pressable>
         </View>
       </View>
@@ -136,6 +138,10 @@ const styles = StyleSheet.create({
   container: {
     flexDirection: "row",
     alignItems: "flex-start",
+  },
+  content: {
+    marginVertical: vw(4),
+    fontSize: vw(18),
   },
   avatar: {
     width: 48,
