@@ -86,7 +86,11 @@ const ProductCard: FC<Props> = ({
           onLoad={onImageLoad}
         />
         <ThemedView style={styles.content}>
-          <ThemedText style={styles.title}>{productEntry.title}</ThemedText>
+          <ThemedText
+            style={styles.title}
+            numberOfLines={2}
+            ellipsizeMode="tail"
+          >{productEntry.title}</ThemedText>
           <ThemedText style={styles.description}>
             {productEntry.description}
           </ThemedText>
@@ -127,7 +131,7 @@ const styles = StyleSheet.create({
   price: {
     fontSize: vw(16),
     fontWeight: "bold",
-    color: "red",
+    color: "#ff5000",
   },
 
   listItem: {
