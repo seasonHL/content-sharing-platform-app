@@ -73,33 +73,52 @@ export const Profile: FC<ProfileProps> = ({ userId, left }) => {
                 }}
                 style={styles.avatar}
               />
-              <Text style={styles.username}>{userInfo.username}</Text>
+              <View>
+                <Text style={styles.username}>{userInfo.username}</Text>
+                <Text style={styles.subInfo}>ip属地：重庆</Text>
+              </View>
             </View>
-            <Text style={styles.white}>
-              关注：<Text style={styles.white}>{userInfo.followings ?? 0}</Text>
-              粉丝：<Text style={styles.white}>{userInfo.followers ?? 0}</Text>
-            </Text>
+            {/* 简介 */}
             <Text style={styles.white}>{userInfo.bio || D_BIO}</Text>
-            <View style={styles.action}>
-              {isSelf ? (
-                <>
-                  <Button
-                    title="编辑个人信息"
-                    type="secondary"
-                    onPress={() => {}}
-                  />
-                  <Button
-                    title="设置"
-                    type="secondary"
-                    onPress={() => router.push("/settings")}
-                  />
-                </>
-              ) : (
-                <>
-                  <Button title="关注" onPress={() => {}} />
-                  <Button title="私信" type="secondary" onPress={handleChat} />
-                </>
-              )}
+            {/* 账号数据 */}
+            <View style={styles.accountData}>
+              <View style={styles.dataItem}>
+                <Text style={styles.white}>{userInfo.followings ?? 0}</Text>
+                <Text style={styles.white}>关注</Text>
+              </View>
+              <View style={styles.dataItem}>
+                <Text style={styles.white}>{userInfo.followers ?? 0}</Text>
+                <Text style={styles.white}>粉丝</Text>
+              </View>
+              <View style={styles.dataItem}>
+                <Text style={styles.white}>{0}</Text>
+                <Text style={styles.white}>点赞</Text>
+              </View>
+              <View style={styles.action}>
+                {isSelf ? (
+                  <>
+                    <Button
+                      title="编辑个人信息"
+                      type="secondary"
+                      onPress={() => {}}
+                    />
+                    <Button
+                      title="设置"
+                      type="secondary"
+                      onPress={() => router.push("/settings")}
+                    />
+                  </>
+                ) : (
+                  <>
+                    <Button title="关注" onPress={() => {}} />
+                    <Button
+                      title="私信"
+                      type="secondary"
+                      onPress={handleChat}
+                    />
+                  </>
+                )}
+              </View>
             </View>
           </SafeAreaView>
         </LinearGradient>
@@ -107,7 +126,8 @@ export const Profile: FC<ProfileProps> = ({ userId, left }) => {
 
       <View style={styles.postList}>
         <View style={styles.contentHeader}>
-          <Text>笔记</Text>
+          <Text style={[styles.tabTitle,styles.black]}>作品</Text>
+          <Text style={[styles.tabTitle,styles.gray]}>点赞</Text>
         </View>
         <WaterFallList
           data={postList}
@@ -148,19 +168,45 @@ const styles = StyleSheet.create({
     fontSize: vw(20),
     color: "white",
   },
+  subInfo: {
+    fontSize: vw(12),
+    color: "#ffffffa0",
+    marginTop: vw(8),
+  },
   white: {
     color: "white",
   },
   action: {
     flexDirection: "row",
+    alignItems: "center",
     gap: 10,
-    marginTop: vw(16),
+    // marginTop: vw(16),
   },
   contentHeader: {
     height: vw(48),
     flexDirection: "row",
     alignItems: "center",
+    gap: vw(10),
     paddingHorizontal: vw(20),
   },
+  tabTitle:{
+    fontSize: vw(20)
+  },
   postList: {},
+  accountData: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: vw(32),
+    // marginVertical: vw(8),
+    marginTop: vw(16),
+  },
+  dataItem: {
+    alignItems: "center",
+  },
+  black:{
+    color: 'black'
+  },
+  gray:{
+    color: 'gray'
+  }
 });
