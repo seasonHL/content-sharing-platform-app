@@ -1,8 +1,8 @@
 import { ThemedSafeAreaView } from "@/components/ui/ThemedSafeAreaView";
-import { addToCart, getProduct } from "@/service/shop";
+import { addToCart, getProduct, getProductComments } from "@/service/shop";
 import { ProductType } from "@/types";
 import { getImageSize, vw } from "@/utils";
-import { useLocalSearchParams } from "expo-router";
+import { useLocalSearchParams, useRouter } from "expo-router";
 import { useEffect, useState } from "react";
 import {
   View,
@@ -13,11 +13,19 @@ import {
   Button,
   TouchableHighlight,
   ToastAndroid,
+  FlatList,
 } from "react-native";
+import { AntDesign, Feather } from "@expo/vector-icons";
+import { SafeAreaView } from "react-native-safe-area-context";
+import { ProductComment } from "@/types/shop";
 
 export default function ProductPage() {
   const params = useLocalSearchParams<{ productId: string }>();
+  const router = useRouter();
   const [product, setProduct] = useState<ProductType | null>(null);
+  const [productComments, setProductComments] = useState<
+    ProductComment[] | null
+  >(null);
   const [imageHeight, setImageHeight] = useState(0);
 
   const handleAddToCart = async () => {
@@ -45,9 +53,12 @@ export default function ProductPage() {
       console.log(res.data);
       setProduct(res.data);
     });
+    getProductComments(Number(params.productId)).then((res) => {
+      setProductComments(res.data);
+    });
   }, []);
   return (
-    <ThemedSafeAreaView style={styles.grow}>
+    <SafeAreaView style={styles.grow}>
       <Image
         source={{ uri: product?.image }}
         style={{
@@ -56,12 +67,59 @@ export default function ProductPage() {
         }}
       />
       <ScrollView style={styles.container}>
-        {/* 价格 */}
-        <Text style={styles.price}>￥{product?.price}</Text>
-        {/* 标题 */}
-        <Text style={styles.title}>{product?.name}</Text>
+        <View style={styles.section}>
+          {/* 价格 */}
+          <Text style={styles.price}>￥{product?.price}</Text>
+          {/* 标题 */}
+          <Text style={styles.title}>{product?.name}</Text>
+          {/* 物流 */}
+          <View style={[styles.tags]}>
+            <Feather name="package" size={16} color="gray" />
+            <Text style={[styles.gray]}>承诺48小时发货</Text>
+          </View>
+          {/* 权益 */}
+          <View style={[styles.tags]}>
+            <AntDesign name="Safety" size={16} color="gray" />
+            <Text style={[styles.gray]}>退货包运费|假一赔十|7天无理由退货</Text>
+          </View>
+          {/* 标签 */}
+          <View style={[styles.tags]}>
+            <AntDesign name="tagso" size={16} color="gray" />
+            <Text style={[styles.gray]}>重量|容量|充电速度</Text>
+          </View>
+        </View>
+        {/* 评价 */}
+        <View style={styles.section}>
+          <View style={styles.commentList}>
+            <Text style={styles.cmtTitle}>商品评价99</Text>
+            {productComments?.map((item, index) => (
+              <View style={styles.comment} key={index}>
+                <View style={styles.commentCreator}>
+                  <Image style={styles.avatar} source={{ uri: item.avatar }} />
+                  <Text style={styles.username}>{item.username}</Text>
+                </View>
+                <Text>{item.content}</Text>
+              </View>
+            ))}
+          </View>
+        </View>
       </ScrollView>
       <View style={styles.bottomBar}>
+        {/* 购物车 */}
+        <View style={styles.center}>
+          <Feather
+            name="shopping-cart"
+            size={16}
+            color="black"
+            onPress={() => router.navigate("/cart")}
+          />
+          <Text style={styles.actionText}>购物车</Text>
+        </View>
+        {/* 客服消息 */}
+        <View style={styles.center}>
+          <AntDesign name="customerservice" size={16} color="black" />
+          <Text style={styles.actionText}>客服</Text>
+        </View>
         <View style={styles.action}>
           <TouchableHighlight style={styles.btnL} onPress={handleAddToCart}>
             <Text style={styles.btnTextL}>加入购物车</Text>
@@ -71,7 +129,7 @@ export default function ProductPage() {
           </TouchableHighlight>
         </View>
       </View>
-    </ThemedSafeAreaView>
+    </SafeAreaView>
   );
 }
 
@@ -83,49 +141,105 @@ const styles = StyleSheet.create({
     flex: 1,
     paddingHorizontal: vw(8),
   },
+  section: {
+    paddingHorizontal: vw(8),
+    backgroundColor: "#fff",
+    borderRadius: vw(8),
+    marginVertical: vw(6),
+  },
   price: {
-    fontSize: vw(24),
+    fontSize: vw(32),
     fontWeight: "bold",
-    color: "red",
+    color: "#ff5000",
+    paddingVertical: vw(4),
   },
   title: {
-    fontSize: vw(24),
+    fontSize: vw(20),
     fontWeight: "bold",
+    paddingVertical: vw(4),
   },
   bottomBar: {
     flexDirection: "row",
-    justifyContent: "space-between",
+    // justifyContent: "space-between",
     alignItems: "center",
     paddingHorizontal: vw(8),
     paddingVertical: vw(8),
     backgroundColor: "white",
     borderTopWidth: 1,
     borderTopColor: "#ececec",
+    gap: vw(16),
   },
   action: {
     flexDirection: "row",
     alignItems: "center",
-    height: vw(40),
+    height: vw(48),
   },
   baseBtn: {},
   btnL: {
     paddingHorizontal: vw(16),
-    paddingVertical: vw(8),
-    borderTopLeftRadius: vw(20),
-    borderBottomLeftRadius: vw(20),
-    backgroundColor: "#8BC6EC",
+    paddingVertical: vw(12),
+    borderTopLeftRadius: vw(8),
+    borderBottomLeftRadius: vw(8),
+    backgroundColor: "#ff9402",
   },
   btnTextL: {
     color: "white",
+    fontWeight: 600,
   },
   btnR: {
     paddingHorizontal: vw(16),
-    paddingVertical: vw(8),
-    borderTopRightRadius: vw(20),
-    borderBottomRightRadius: vw(20),
-    backgroundColor: "red",
+    paddingVertical: vw(12),
+    borderTopRightRadius: vw(8),
+    borderBottomRightRadius: vw(8),
+    backgroundColor: "#ff5000",
   },
   btnTextR: {
     color: "white",
+    fontWeight: 600,
+  },
+  center: {
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  alignCenter: {
+    alignItems: "center",
+  },
+  row: {
+    flexDirection: "row",
+  },
+  gray: {
+    color: "gray",
+  },
+  tags: {
+    flexDirection: "row",
+    gap: vw(10),
+    paddingVertical: vw(4),
+  },
+  actionText: {
+    fontSize: vw(12),
+  },
+  commentList: {
+    paddingVertical: vw(4),
+  },
+  cmtTitle: {
+    fontSize: vw(20),
+    paddingVertical: vw(4),
+  },
+  comment: {
+    marginVertical: vw(4),
+  },
+  commentCreator: {
+    flexDirection: "row",
+    alignItems: "center",
+    marginVertical: vw(4),
+  },
+  avatar: {
+    width: vw(16),
+    height: vw(16),
+    borderRadius: vw(8),
+  },
+  username: {
+    marginHorizontal: vw(4),
+    color: "gray",
   },
 });

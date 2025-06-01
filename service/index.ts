@@ -3,8 +3,8 @@ import axios, { AxiosError } from "axios";
 import { ToastAndroid } from "react-native";
 export { socket } from './socket'
 
-export const BASE_URL = 'http://192.168.227.125:3000'
-// const BASE_URL = 'http://123.56.81.201:3000'
+// export const BASE_URL = 'http://192.168.227.125:3000'
+const BASE_URL = 'http://123.56.81.201:3000'
 
 export const service = axios.create({
     baseURL: BASE_URL
