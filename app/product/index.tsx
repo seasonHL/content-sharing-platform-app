@@ -59,14 +59,14 @@ export default function ProductPage() {
   }, []);
   return (
     <SafeAreaView style={styles.grow}>
-      <Image
-        source={{ uri: product?.image }}
-        style={{
-          width: "100%",
-          height: imageHeight,
-        }}
-      />
       <ScrollView style={styles.container}>
+        <Image
+          source={{ uri: product?.image }}
+          style={{
+            width: "100%",
+            height: imageHeight,
+          }}
+        />
         <View style={styles.section}>
           {/* 价格 */}
           <Text style={styles.price}>￥{product?.price}</Text>

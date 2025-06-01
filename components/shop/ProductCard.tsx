@@ -66,8 +66,16 @@ const ProductCard: FC<Props> = ({
         {withCheck && <Checkbox value={product.selected} color={"gray"} />}
         <Image style={styles.lCover} source={{ uri: product.image }} />
         <View style={styles.lInfo}>
-          <Text style={styles.lName}>{product.name}</Text>
-          <Text style={styles.lDescription}>{product.description}</Text>
+          <Text style={styles.lName} numberOfLines={2} ellipsizeMode="tail">
+            {product.name}
+          </Text>
+          <Text
+            style={styles.lDescription}
+            numberOfLines={2}
+            ellipsizeMode="tail"
+          >
+            {product.description}
+          </Text>
           <Text style={styles.lPrice}>￥{product.price}</Text>
         </View>
       </View>
@@ -90,8 +98,14 @@ const ProductCard: FC<Props> = ({
             style={styles.title}
             numberOfLines={2}
             ellipsizeMode="tail"
-          >{productEntry.title}</ThemedText>
-          <ThemedText style={styles.description}>
+          >
+            {productEntry.title}
+          </ThemedText>
+          <ThemedText
+            style={styles.description}
+            numberOfLines={2}
+            ellipsizeMode="tail"
+          >
             {productEntry.description}
           </ThemedText>
           <ThemedText style={styles.price}>￥{product.price}</ThemedText>

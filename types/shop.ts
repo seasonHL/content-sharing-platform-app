@@ -9,3 +9,9 @@ export interface ProductType {
     /** 商品描述 */
     description: string;
 }
+
+export interface ProductComment {
+    username: string;
+    avatar: string;
+    content: string
+}

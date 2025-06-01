@@ -1,6 +1,8 @@
 import { useUser } from "@/store"
 import { service } from "."
 
+import productComments from '@/mock/productComments.json'
+
 export const getProductList = async () => {
     const res = await service.get('/product/list')
     return res.data
@@ -13,6 +15,10 @@ export const getProduct = async (id: number) => {
         }
     })
     return res.data
+}
+
+export const getProductComments = async (id: number) => {
+    return productComments
 }
 
 export const addToCart = async (productIds: number[]) => {
